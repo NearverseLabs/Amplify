@@ -2,6 +2,12 @@
 
 Welcome to Amplify.
 
+URLs:
+Frontend canister via browser
+amplify_sc_rust_frontend: http://13.49.84.77:35615/?canisterId=b77ix-eeaaa-aaaaa-qaada-cai
+Backend canister via Candid interface:
+amplify_sc_rust_backend: http://13.49.84.77:35615/?canisterId=by6od-j4aaa-aaaaa-qaadq-cai&id=bw4dl-smaaa-aaaaa-qaacq-cai
+
 To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
 
 To learn more before you start working with amplify_sc_rust, see the following documentation available online:

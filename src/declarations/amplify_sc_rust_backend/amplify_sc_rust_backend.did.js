@@ -12,6 +12,12 @@ export const idlFactory = ({ IDL }) => {
     'winners' : IDL.Nat64,
   });
   const CampaignResult = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
+  const Users = IDL.Record({
+    'id' : IDL.Principal,
+    'name' : IDL.Text,
+    'twitter_username' : IDL.Text,
+  });
+  const CommonResultUser = IDL.Variant({ 'Ok' : Users, 'Err' : IDL.Text });
   const CommonResult = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
   const Participant = IDL.Record({
     'reward_claimed' : IDL.Bool,
@@ -35,11 +41,6 @@ export const idlFactory = ({ IDL }) => {
     'page_size' : IDL.Nat64,
     'page_number' : IDL.Nat64,
   });
-  const Users = IDL.Record({
-    'id' : IDL.Principal,
-    'name' : IDL.Text,
-    'twitter_username' : IDL.Text,
-  });
   const UsersArgs = IDL.Record({
     'name' : IDL.Text,
     'twitter_username' : IDL.Text,
@@ -48,6 +49,7 @@ export const idlFactory = ({ IDL }) => {
     'am_i_a_winner' : IDL.Func([IDL.Nat64], [IDL.Bool], []),
     'clear' : IDL.Func([], [], ['oneway']),
     'create_campaign' : IDL.Func([CreateCampaignArgs], [CampaignResult], []),
+    'get_user' : IDL.Func([Principal], [CommonResultUser], []),
     'get_whitelisted_tokens' : IDL.Func([], [IDL.Vec(Principal)], []),
     'greet' : IDL.Func([IDL.Text], [IDL.Text], ['query']),
     'have_i_participated' : IDL.Func([IDL.Nat64], [CommonResult], []),

@@ -18,6 +18,8 @@ export type CampaignResult = { 'Ok' : bigint } |
   { 'Err' : string };
 export type CommonResult = { 'Ok' : boolean } |
   { 'Err' : string };
+export type CommonResultUser = { 'Ok' : Users } |
+  { 'Err' : string };
 export interface CreateCampaignArgs {
   'reward' : Tokens,
   'tweet_id' : string,
@@ -54,6 +56,7 @@ export interface _SERVICE {
   'am_i_a_winner' : ActorMethod<[bigint], boolean>,
   'clear' : ActorMethod<[], undefined>,
   'create_campaign' : ActorMethod<[CreateCampaignArgs], CampaignResult>,
+  'get_user' : ActorMethod<[Principal], CommonResultUser>,
   'get_whitelisted_tokens' : ActorMethod<[], Array<Principal>>,
   'greet' : ActorMethod<[string], string>,
   'have_i_participated' : ActorMethod<[bigint], CommonResult>,

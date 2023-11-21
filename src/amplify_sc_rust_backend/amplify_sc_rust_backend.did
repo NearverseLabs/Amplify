@@ -52,6 +52,10 @@ type Campaign = record {
 
 type Memo = nat64;
 
+type CommonResultUser = variant {
+    Ok: Users;
+    Err: text;
+};
 type CommonResult = variant {
     Ok: bool;
     Err: text;
@@ -88,6 +92,7 @@ service : {
 
     paginate_users: (PaginationArgs) -> (vec Users) query;
     register_user: (UsersArgs) -> (CommonResult);
+    get_user: (user_address: Principal) -> (CommonResultUser);
 
     create_campaign: (CreateCampaignArgs) -> (CampaignResult);
     search_campaigns_by_project_name: (project_name_query: text) -> (vec Campaign);

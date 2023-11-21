@@ -77,6 +77,11 @@ pub enum CommonResult {
     Ok(bool),
     Err(String),
 }
+#[derive(CandidType)]
+pub enum CommonResultUser {
+    Ok(Users),
+    Err(String),
+}
 
 #[derive(CandidType)]
 pub enum CampaignResult {

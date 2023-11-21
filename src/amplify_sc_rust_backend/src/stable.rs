@@ -124,6 +124,21 @@ impl StableState {
         self.users.insert(caller, args);
         CommonResult::Ok(true)
     }
+    pub fn get_user(&self, user_address: Principal) -> CommonResultUser {
+        match self.users.get(&user_address) {
+            Some(user) => {
+                let res = Users {
+                    twitter_username: user.twitter_username.clone(),
+                    name: user.name.clone(),
+                    id: user_address,
+                };
+                CommonResultUser::Ok(res)
+            },
+            None => {
+                CommonResultUser::Err("User not registered.".to_string())
+            }
+        }
+    }
 
     pub fn check_if_owner(&mut self) -> CommonResult {
         let caller = caller();

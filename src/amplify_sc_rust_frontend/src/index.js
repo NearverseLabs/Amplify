@@ -9,7 +9,11 @@ document.querySelector("form#greetings").addEventListener("submit", async (e) =>
   button.setAttribute("disabled", true);
 
   // Interact with foo actor, calling the greet method
-  const greeting = await amplify_sc_rust_backend.greet(name);
+  const greeting = await amplify_sc_rust_backend.create_campaign({
+    reward: {
+      e8s: 1000000
+    }
+  });
 
   button.removeAttribute("disabled");
 

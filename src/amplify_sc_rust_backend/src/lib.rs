@@ -25,6 +25,10 @@ fn greet(name: String) -> String {
 fn register_user(args: UsersArgs) -> CommonResult {
     STATE.with(|s| s.borrow_mut().register_user(args))
 }
+#[query]
+fn get_user(user_address: Principal) -> CommonResultUser {
+    STATE.with(|s| s.borrow_mut().get_user(user_address))
+}
 #[update]
 fn create_campaign(args: CreateCampaignArgs) -> CampaignResult {
     STATE.with(|s| s.borrow_mut().create_campaign(args))
