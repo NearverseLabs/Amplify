@@ -25,9 +25,17 @@ type Winner = record {
     reward_claimed: bool;
 };
 
+type CreateCampaignRequirements = record {
+    follow: bool;
+    like: bool;
+    retweet: bool;
+    quote_retweet: bool;
+};
+
 type CreateCampaignArgs = record {
     reward: Tokens;
     reward_token: Principal;
+    requirements: CreateCampaignRequirements;
     winners: nat64;
     project_name: text;
     tweet_id: text;
@@ -39,6 +47,7 @@ type CreateCampaignArgs = record {
 type Campaign = record {
     reward: Tokens;
     reward_token: Principal;
+    requirements: CreateCampaignRequirements;
     winners: nat64;
     project_name: text;
     tweet_id: text;
@@ -84,6 +93,8 @@ service : {
     unwhitelist_token: (token_canister_id: Principal) -> (CommonResult);
     is_token_whitelisted: (token_canister_id: Principal) -> (bool);
     get_whitelisted_tokens: () -> (vec Principal);
+    is_owner: () -> (bool);
+    get_settings: () -> (Settings);
 
     update_min_reward_amount: (new_amount: nat64) -> (CommonResult);
     update_min_winners: (new_winners: nat64) -> (CommonResult);

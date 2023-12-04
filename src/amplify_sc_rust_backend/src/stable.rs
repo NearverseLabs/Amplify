@@ -73,6 +73,7 @@ impl StableState {
         }
 
         let campaign = Campaign {
+            requirements: args.requirements,
             reward: args.reward,
             reward_token: args.reward_token,
             winners: args.winners,
@@ -140,6 +141,13 @@ impl StableState {
         }
     }
 
+    pub fn check_is_owner(&mut self) -> bool {
+        let caller = caller();
+        if Some(caller) != self.owner {
+            return false;
+        }
+        return true;
+    }
     pub fn check_if_owner(&mut self) -> CommonResult {
         let caller = caller();
         if Some(caller) != self.owner {

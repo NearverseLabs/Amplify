@@ -45,8 +45,16 @@ pub struct Participant {
     pub(crate) reward_claimed: bool,
 }
 
+#[derive(Clone, CandidType, Deserialize, Serialize, Debug)]
+pub struct CreateCampaignRequirements {
+    pub(crate) follow: bool,
+    pub(crate) like: bool,
+    pub(crate) retweet: bool,
+    pub(crate) quote_retweet: bool,
+}
 #[derive(Clone, CandidType, Deserialize, Serialize)]
 pub struct CreateCampaignArgs {
+    pub(crate) requirements: CreateCampaignRequirements,
     pub(crate) reward: Tokens,
     pub(crate) reward_token: Principal,
     pub(crate) winners: u64,
@@ -59,6 +67,7 @@ pub struct CreateCampaignArgs {
 
 #[derive(Clone, CandidType, Deserialize, Serialize, Debug)]
 pub struct Campaign {
+    pub(crate) requirements: CreateCampaignRequirements,
     pub(crate) reward: Tokens,
     pub(crate) reward_token: Principal,
     pub(crate) winners: u64,

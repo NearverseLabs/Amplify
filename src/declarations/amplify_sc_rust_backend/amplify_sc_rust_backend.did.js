@@ -1,6 +1,12 @@
 export const idlFactory = ({ IDL }) => {
   const Tokens = IDL.Record({ 'e8s' : IDL.Nat64 });
   const Principal = IDL.Principal;
+  const CreateCampaignRequirements = IDL.Record({
+    'retweet' : IDL.Bool,
+    'like' : IDL.Bool,
+    'quote_retweet' : IDL.Bool,
+    'follow' : IDL.Bool,
+  });
   const CreateCampaignArgs = IDL.Record({
     'reward' : Tokens,
     'tweet_id' : IDL.Text,
@@ -8,10 +14,17 @@ export const idlFactory = ({ IDL }) => {
     'reward_token' : Principal,
     'ends_at' : IDL.Nat64,
     'user_id' : IDL.Principal,
+    'requirements' : CreateCampaignRequirements,
     'project_name' : IDL.Text,
     'winners' : IDL.Nat64,
   });
   const CampaignResult = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
+  const Settings = IDL.Record({
+    'min_reward_amount' : IDL.Nat64,
+    'platform_fees' : IDL.Nat64,
+    'min_winners' : IDL.Nat64,
+    'max_winners' : IDL.Nat64,
+  });
   const Users = IDL.Record({
     'id' : IDL.Principal,
     'name' : IDL.Text,
@@ -33,6 +46,7 @@ export const idlFactory = ({ IDL }) => {
     'reward_token' : Principal,
     'ends_at' : IDL.Nat64,
     'user_id' : IDL.Principal,
+    'requirements' : CreateCampaignRequirements,
     'campaign_id' : IDL.Nat64,
     'project_name' : IDL.Text,
     'winners' : IDL.Nat64,
@@ -49,10 +63,12 @@ export const idlFactory = ({ IDL }) => {
     'am_i_a_winner' : IDL.Func([IDL.Nat64], [IDL.Bool], []),
     'clear' : IDL.Func([], [], ['oneway']),
     'create_campaign' : IDL.Func([CreateCampaignArgs], [CampaignResult], []),
+    'get_settings' : IDL.Func([], [Settings], []),
     'get_user' : IDL.Func([Principal], [CommonResultUser], []),
     'get_whitelisted_tokens' : IDL.Func([], [IDL.Vec(Principal)], []),
     'greet' : IDL.Func([IDL.Text], [IDL.Text], ['query']),
     'have_i_participated' : IDL.Func([IDL.Nat64], [CommonResult], []),
+    'is_owner' : IDL.Func([], [IDL.Bool], []),
     'is_token_whitelisted' : IDL.Func([Principal], [IDL.Bool], []),
     'my_claimed_campaigns' : IDL.Func([], [IDL.Vec(Campaign)], []),
     'my_unclaimed_campaigns' : IDL.Func([], [IDL.Vec(Campaign)], []),

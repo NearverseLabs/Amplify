@@ -92,6 +92,17 @@ fn get_whitelisted_tokens() -> Vec<Principal> {
 }
 
 #[query]
+fn is_owner() -> bool {
+    return STATE.with(|s| s.borrow_mut().check_is_owner())
+}
+#[query]
+fn get_settings() -> Settings {
+    STATE.with(|state| {
+        return state.borrow().settings;
+    })
+}
+
+#[query]
 fn paginate_users(args: PaginationArgs) -> Vec<(Users)> {
     let start_index = (args.page_number - 1) * args.page_size;
     let end_index = start_index + args.page_size;

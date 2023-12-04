@@ -35,6 +35,12 @@ dfx identity use default
 
 # Whitelist the token
 dfx canister call amplify_sc_rust_backend whitelist_token '(principal '\"$TOKEN_ID\"')'
+dfx canister call amplify_sc_rust_backend register_user '(record {
+                                                              twitter_username = "my_twitter";
+                                                              name = "ti";
+                                                          })'
+dfx canister call amplify_sc_rust_backend is_owner
+dfx canister call amplify_sc_rust_backend get_user '(principal '\"$PRINCIPAL\"')'
 
 # Negative Test: Try creating a campaign with a non-whitelisted token
 #dfx canister call amplify_sc_rust_backend create_campaign '(record {
@@ -54,7 +60,8 @@ dfx canister call amplify_sc_rust_backend whitelist_token '(principal '\"$TOKEN_
 # Create a campaign with the whitelisted token
 dfx canister call amplify_sc_rust_backend create_campaign '(record {
                                                                         "reward_token" = principal '\"$TOKEN_ID\"';
-                                                                            reward = record { "e8s" = 1000000 };
+                                                                            reward = record { "e8s" = 100 };
+                                                                            requirements = record { follow = true; like = true; retweet = true; quote_retweet = true; };
                                                                             winners = 5;
                                                                             tweet_id = "bla";
                                                                             campaign_id = 5;

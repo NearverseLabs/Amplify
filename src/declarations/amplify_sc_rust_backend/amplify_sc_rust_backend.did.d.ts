@@ -10,6 +10,7 @@ export interface Campaign {
   'reward_token' : Principal,
   'ends_at' : bigint,
   'user_id' : Principal,
+  'requirements' : CreateCampaignRequirements,
   'campaign_id' : bigint,
   'project_name' : string,
   'winners' : bigint,
@@ -27,8 +28,15 @@ export interface CreateCampaignArgs {
   'reward_token' : Principal,
   'ends_at' : bigint,
   'user_id' : Principal,
+  'requirements' : CreateCampaignRequirements,
   'project_name' : string,
   'winners' : bigint,
+}
+export interface CreateCampaignRequirements {
+  'retweet' : boolean,
+  'like' : boolean,
+  'quote_retweet' : boolean,
+  'follow' : boolean,
 }
 export type Memo = bigint;
 export interface PaginationArgs { 'page_size' : bigint, 'page_number' : bigint }
@@ -56,10 +64,12 @@ export interface _SERVICE {
   'am_i_a_winner' : ActorMethod<[bigint], boolean>,
   'clear' : ActorMethod<[], undefined>,
   'create_campaign' : ActorMethod<[CreateCampaignArgs], CampaignResult>,
+  'get_settings' : ActorMethod<[], Settings>,
   'get_user' : ActorMethod<[Principal], CommonResultUser>,
   'get_whitelisted_tokens' : ActorMethod<[], Array<Principal>>,
   'greet' : ActorMethod<[string], string>,
   'have_i_participated' : ActorMethod<[bigint], CommonResult>,
+  'is_owner' : ActorMethod<[], boolean>,
   'is_token_whitelisted' : ActorMethod<[Principal], boolean>,
   'my_claimed_campaigns' : ActorMethod<[], Array<Campaign>>,
   'my_unclaimed_campaigns' : ActorMethod<[], Array<Campaign>>,
