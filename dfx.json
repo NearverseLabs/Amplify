@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "amplify_sc_rust_backend": {
+      "candid": "src/amplify_sc_rust_backend/amplify_sc_rust_backend.did",
+      "dependencies": [
+      ],
+      "package": "amplify_sc_rust_backend",
+      "type": "rust"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    },
+    "test": {
+      "bind": "13.49.84.77:35615",
+      "type": "ephemeral"
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

@@ -1,0 +1,178 @@
+type Principal = principal;
+
+type Tokens = record {
+    e8s: nat64;
+};
+
+type Participant = record {
+    user_id: principal;
+    is_verified: bool;
+    reward_claimed: bool;
+};
+
+type Users = record {
+    twitter_username: text;
+    name: text;
+    id: principal;
+};
+
+type Winner = record {
+    user_id: Principal;
+    reward_claimed: bool;
+};
+
+type CampaignStatus = variant {
+    Upcoming;
+    Live;
+    Ended;
+};
+
+type CampaignFilter = record {
+    project_name: opt text;
+    reward_token: opt principal;
+    my_created_campaigns: opt principal;
+    my_participated_campaigns: opt principal;
+    my_claimed_campaigns: opt principal;
+    my_unclaimed_campaigns: opt principal;
+    to_be_verified: opt bool;
+    status: opt CampaignStatus;
+};
+
+type CreateCampaignRequirements = record {
+    follow: bool;
+    like: bool;
+    retweet: bool;
+    quote_retweet: bool;
+    tweet_reply: bool;
+};
+
+type CreateCampaignArgs = record {
+    reward: Tokens;
+    reward_token: Principal;
+    requirements: CreateCampaignRequirements;
+    winners: nat64;
+    project_name: text;
+    tweet_id: text;
+    starts_at: nat64;
+    ends_at: nat64;
+    user_id: principal;
+};
+
+type Campaign = record {
+    reward: Tokens;
+    reward_token: Principal;
+    requirements: CreateCampaignRequirements;
+    winners: nat64;
+    project_name: text;
+    tweet_id: text;
+    campaign_id: nat64;
+    starts_at: nat64;
+    ends_at: nat64;
+    total_withdrawn: nat64;
+    is_verified: bool;
+    is_deposited: bool;
+    user_id: principal;
+    participants: vec Participant;
+    selected_winners: vec Participant;
+};
+
+type UserCampaign = record {
+    campaign: Campaign;
+    participated: bool;
+    total_participants: nat64;
+    won: bool;
+};
+
+type Memo = nat64;
+
+type CommonResultUser = variant {
+    Ok: Users;
+    Err: text;
+};
+type CommonResultUsers = variant {
+    Ok: vec Users;
+    Err: text;
+};
+type CommonResultCampaign = variant {
+    Ok: Campaign;
+    Err: text;
+};
+type CommonResultCampaigns = variant {
+    Ok: vec Campaign;
+    Err: text;
+};
+type CommonResult = variant {
+    Ok: bool;
+    Err: text;
+};
+type CampaignResult = variant {
+    Ok: nat64;
+    Err: text;
+};
+type WhiteListedTokenResult = variant {
+    Ok: bool;
+    Err: text;
+};
+
+type PaginationArgs = record {
+    page_number: nat64;
+    page_size: nat64;
+};
+
+type WhiteListedToken = record {
+    token: Principal;
+    min_reward: nat64;
+    token_type: text;
+};
+
+type Settings = record {
+    min_winners: nat64;
+    max_winners: nat64;
+    platform_fees: nat64;
+    platform_fee_owner: Principal;
+};
+
+
+service : {
+    "greet": (text) -> (text) query;
+    whitelist_token: (token_canister_id: Principal, min_amount: nat64, token_type: text) -> (WhiteListedTokenResult);
+    unwhitelist_token: (token_canister_id: Principal) -> (CommonResult);
+    is_token_whitelisted: (token_canister_id: Principal) -> (bool);
+    get_whitelisted_tokens: () -> (vec WhiteListedToken);
+    is_owner: () -> (bool);
+    get_settings: () -> (Settings);
+    current_time: () -> (nat64);
+
+    update_min_reward_amount: (token: Principal, new_amount: nat64, token_type: text) -> (CommonResult);
+    update_min_winners: (new_winners: nat64) -> (CommonResult);
+    update_max_winners: (new_winners: nat64) -> (CommonResult);
+    update_platform_fees: (platform_fees: nat64) -> (CommonResult);
+    update_platform_fee_owner: (platform_fee_owner: Principal) -> (CommonResult);
+    transfer_owner: (new_owner: Principal) -> (CommonResult);
+    transfer_service_account: (new_owner: Principal) -> (CommonResult);
+
+    paginate_users: (PaginationArgs) -> (vec Users) query;
+    register_user: (Users) -> (CommonResult);
+    update_user: (Users) -> (CommonResult);
+    get_user: (user_address: Principal) -> (CommonResultUser);
+
+    create_campaign: (CreateCampaignArgs) -> (CampaignResult);
+    deposit_campaign: (campaign_id: nat64) -> (CommonResult);
+    campaign_by_id: (campaign_id: nat64) -> (CommonResultCampaign);
+    search_campaigns_by_project_name: (project_name_query: text) -> (vec Campaign);
+    total_campaigns: () -> (nat64);
+    total_users: () -> (nat64);
+    participate_in_campaign: (campaign_id: nat64) -> (CommonResult);
+    select_winners: (campaign_id: nat64) -> (CommonResult);
+    have_i_participated: (campaign_id: nat64) -> (CommonResult);
+    am_i_a_winner: (campaign_id: nat64) -> (bool);
+    paginate_campaigns: (args: PaginationArgs, filter: CampaignFilter) -> (vec UserCampaign);
+    paginate_winners: (campaign_id: nat64, args: PaginationArgs) -> (vec Participant);
+    paginate_participants: (campaign_id: nat64, args: PaginationArgs) -> (vec Participant, vec Users);
+    getDepositAddress: () -> (text);
+    claimReward: (campaign_id: nat64) -> (CommonResult);
+
+    "submit_participants": (campaign_id: nat64, vec principal) -> (CommonResult);
+
+    clear: () -> () oneway;
+}
