@@ -31,6 +31,9 @@ export default Env.rules({
   TWITTER_CLIENT_ID: Env.schema.string(),
   TWITTER_CLIENT_SECRET: Env.schema.string(),
   TWITTER_CALLBACK_URL: Env.schema.string(),
+  TWITTER_API_KEY: Env.schema.string(),
+  TWITTER_API_KEY_SECRET: Env.schema.string(),
+  ICP_HOST: Env.schema.string({format: "url"}),
 
   SESSION_DRIVER: Env.schema.string()
 })

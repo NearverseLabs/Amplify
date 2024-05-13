@@ -16,7 +16,16 @@ export default class User extends BaseModel {
   public name: string | null
 
   @column()
+  public username: string
+
+  @column()
+  public address: string
+
+  @column()
   public avatar_url: string | null
+
+  @column()
+  public account_id: string
 
   @column()
   public rememberMeToken: string | null

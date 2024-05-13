@@ -5,10 +5,13 @@ export default class extends BaseSchema {
 
   public async up () {
     this.schema.alterTable(this.tableName, (table) => {
-      table.string('password', 180).nullable().alter()
+      table.string('account_id', 255)
     })
   }
 
   public async down () {
+    this.schema.alterTable(this.tableName, (table) => {
+      table.dropColumn('account_id')
+    })
   }
 }

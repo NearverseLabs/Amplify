@@ -20,7 +20,7 @@ const corsConfig: CorsConfig = {
   | you can define a function to enable/disable it on per request basis as well.
   |
   */
-  enabled: false,
+  enabled: true,
 
   // You can also use a function that return true or false.
   // enabled: (request) => request.url().startsWith('/api')
@@ -44,7 +44,12 @@ const corsConfig: CorsConfig = {
   |                     one of the above values.
   |
   */
-  origin: true,
+  origin: [
+    'localhost',
+    'localhost:3000',
+    'amplify-backend.aticloud.atican.dev',
+    'amplify-frontendreact.atican.dev',
+  ],
 
   /*
   |--------------------------------------------------------------------------

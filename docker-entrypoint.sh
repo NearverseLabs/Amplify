@@ -8,7 +8,14 @@ mkdir -p /app/data
 
 chown -R cloudron:cloudron /app/data
 
+chown -R cloudron:cloudron /run/tmp
 
+if [[ ! -d "$APP_HOME/tmp" ]]; then
+  echo "==> Linking tmp on first run"
+
+  mkdir -p /run/tmp
+  ln -s /run/tmp $APP_HOME/tmp
+fi
 
 if [[ ! -f "$APP_HOME/.env" ]]; then
 
@@ -49,6 +56,7 @@ export PG_DB_NAME=${CLOUDRON_POSTGRESQL_DATABASE:-meflex_backend_db}
 echo "==> Migrating App"
 
 /usr/local/bin/gosu cloudron:cloudron node ace migration:run --force
+#/usr/local/bin/gosu cloudron:cloudron node ace db:seed
 
 echo "==> Starting App"
-exec /usr/local/bin/gosu cloudron:cloudron dumb-init node server.js
+exec /usr/bin/supervisord -c /app/code/supervisord.conf

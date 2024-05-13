@@ -28,7 +28,7 @@ const allyConfig: AllyConfig = {
 		clientId: Env.get('TWITTER_CLIENT_ID'),
 		clientSecret: Env.get('TWITTER_CLIENT_SECRET'),
 		callbackUrl: Env.get('TWITTER_CALLBACK_URL'),
-    scopes: ['tweet.read', 'users.read' , 'follows.read' , 'space.read' , 'like.read' , 'like.write' , 'list.read' , 'block.read']
+    scopes: ['tweet.read', 'users.read' , 'follows.read' , 'like.read' , 'like.write', 'tweet.write', 'follows.write']
 	},
 }
 

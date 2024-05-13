@@ -1,5 +1,53 @@
 {
   "commands": {
+    "sync:campaigns": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": true
+      },
+      "commandPath": "./commands/SyncCampaigns",
+      "commandName": "sync:campaigns",
+      "description": "",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "sync:participants": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": true
+      },
+      "commandPath": "./commands/SyncParticipants",
+      "commandName": "sync:participants",
+      "description": "",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "sync:pending_campaigns": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": true
+      },
+      "commandPath": "./commands/SyncPendingCampaigns",
+      "commandName": "sync:pending_campaigns",
+      "description": "",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "sync:winners": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": true
+      },
+      "commandPath": "./commands/SyncWinners",
+      "commandName": "sync:winners",
+      "description": "",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",
@@ -569,6 +617,23 @@
           "description": "Disable locks acquired to run migrations safely"
         }
       ]
+    },
+    "make:filter": {
+      "settings": {},
+      "commandPath": "adonis-lucid-filter/build/commands/MakeModelFilter",
+      "commandName": "make:filter",
+      "description": "Make a new Lucid filter",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "name",
+          "name": "name",
+          "required": true,
+          "description": "Name of the filter class"
+        }
+      ],
+      "aliases": [],
+      "flags": []
     }
   },
   "aliases": {}

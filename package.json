@@ -62,12 +62,20 @@
     "@adonisjs/repl": "^3.1.11",
     "@adonisjs/session": "^6.4.0",
     "@bahdcoder/ally-twitter-v2": "^1.0.3",
+    "@dfinity/agent": "^0.20.2",
+    "@dfinity/candid": "^0.20.2",
+    "@dfinity/identity": "^0.20.2",
+    "@dfinity/principal": "^0.20.2",
+    "adonis-lucid-filter": "^4.1.1",
+    "axios": "^1.6.2",
+    "isomorphic-fetch": "^3.0.0",
     "luxon": "^3.4.3",
     "mysql2": "^3.6.1",
     "pg": "^8.11.3",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.21",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "twitter-api-sdk": "^1.2.1"
   }
 }
