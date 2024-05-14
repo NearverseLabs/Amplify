@@ -1,6 +1,6 @@
-# Amplify
+## Amplify 
 
-Amplify is a robust and innovative platform built on the Internet Computer (ICP) blockchain, designed to seamlessly integrate social media functionalities with blockchain capabilities. This project leverages a variety of modern technologies to ensure security, scalability, and user-friendliness.
+Amplify is a Social-Fi platform on ICP that enables projects and creators to boost engagement on their social media posts by rewarding interacting users with $ICP and select ICRC tokens. Version 1.0 currently amplifies X posts (Tweets), with plans to expand into additional Web2 and Web3 social media apps in future versions.
 
 ## Features
 
@@ -95,3 +95,22 @@ npm run generate
 ## Canister ID
 
 - **ICP Canister ID**: `3s6zm-3qaaa-aaaag-ak6eq-cai`
+
+
+
+## How Amplify works
+
+An Amplify campaign follows a simple sequence of events:
+Step 01: Creator creates a campaign by filling out a form, and paying sets of rewards ($ICP or select ICRC tokens) and a minor platform fee
+Step 02: Users log in to Amplify and participate in the ongoing campaigns (automatic interaction from Amplify UI)
+Step 03: Campaign ends & winner(s) are picked by on-chain raffle (if participants > winners set for the campaign)
+Step 04: Winning user(s) claim their $ICP or ICRC token rewards, which are credited directly to their wallets.
+
+At the end of a campaign life cycle:
+
+The creator/project gains engagement on their post and reaches the right target audience (ICP users).
+Users/participants can earn rewards for engaging in and winning campaigns.
+
+## Useful links
+
+https://amplify-docs.nearverselabs.com/support-and-useful-links
