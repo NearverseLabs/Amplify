@@ -1,7 +1,7 @@
-Amplify
+**Amplify**
 Amplify is a Social-Fi platform on ICP that enables projects and creators to boost engagement on their social media posts by rewarding interacting users with $ICP and select ICRC tokens. Version 1.0 currently amplifies X posts (Tweets), with plans to expand into additional Web2 and Web3 social media apps in future versions.
 
-Features
+**Features**
 Random Winner Selection: Utilizes ICP's on-chain randomness and Rust's rand library for fair and transparent winner selection.
 ICRC2 Token Support: Ensures secure and efficient handling of token-based transactions.
 Social Media Integration: Directly integrates with social media platforms via the Twitter API v2.0.
@@ -20,18 +20,23 @@ Node.js
 Adonis.js Framework
 DevOps
 Docker
-Installation
+
+**Installation
+**
 Clone the repository
 git clone https://github.com/NearverseLabs/Amplify.git
 Navigate to the project directory
 cd amplify
 Checkout
 git checkout icp
-Install dependencies
+
+**Install dependencies
+**
 yarn install
 To learn more before you start working with amplify_sc_rust, see the following documentation available online:
 
-Quick Start
+**Quick Start
+**
 SDK Developer Tools
 Rust Canister Development Guide
 ic-cdk
@@ -56,14 +61,16 @@ If you have made changes to your backend canister, you can generate a new candid
 
 npm run generate
 
-Acknowledgments
+**Acknowledgments
+**
 Internet Computer (ICP) for blockchain infrastructure.
 Twitter API v2.0 for enabling social media interactions.
 Canister ID
 ICP Canister ID: 3s6zm-3qaaa-aaaag-ak6eq-cai
 
 
-How Amplify works
+**How Amplify works
+**
 An Amplify campaign follows a simple sequence of events:
 Step 01: Creator creates a campaign by filling out a form, and paying sets of rewards ($ICP or select ICRC tokens) and a minor platform fee
 Step 02: Users log in to Amplify and participate in the ongoing campaigns (automatic interaction from Amplify UI)
