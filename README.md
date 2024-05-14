@@ -1,4 +1,67 @@
+Amplify
 Amplify is a Social-Fi platform on ICP that enables projects and creators to boost engagement on their social media posts by rewarding interacting users with $ICP and select ICRC tokens. Version 1.0 currently amplifies X posts (Tweets), with plans to expand into additional Web2 and Web3 social media apps in future versions.
+
+Features
+Random Winner Selection: Utilizes ICP's on-chain randomness and Rust's rand library for fair and transparent winner selection.
+ICRC2 Token Support: Ensures secure and efficient handling of token-based transactions.
+Social Media Integration: Directly integrates with social media platforms via the Twitter API v2.0.
+Technologies Used
+ICP Smart Contracts
+Rust
+Frontend
+TypeScript
+React
+TailwindCSS
+Vite
+Backend
+TypeScript
+PostgreSQL
+Node.js
+Adonis.js Framework
+DevOps
+Docker
+Installation
+Clone the repository
+git clone https://github.com/NearverseLabs/Amplify.git
+Navigate to the project directory
+cd amplify
+Checkout
+git checkout icp
+Install dependencies
+yarn install
+To learn more before you start working with amplify_sc_rust, see the following documentation available online:
+
+Quick Start
+SDK Developer Tools
+Rust Canister Development Guide
+ic-cdk
+ic-cdk-macros
+Candid Introduction
+If you want to start working on your project right away, you might want to try the following commands:
+
+cd amplify/
+dfx help
+dfx canister --help
+Running the project locally
+If you want to test your project locally, you can use the following commands:
+
+# Starts the replica, running in the background
+dfx start --background
+
+# Deploys your canisters to the replica and generates your candid interface
+dfx deploy
+Once the job completes, your application will be available at http://localhost:4943?canisterId={asset_canister_id}.
+
+If you have made changes to your backend canister, you can generate a new candid interface with
+
+npm run generate
+
+Acknowledgments
+Internet Computer (ICP) for blockchain infrastructure.
+Twitter API v2.0 for enabling social media interactions.
+Canister ID
+ICP Canister ID: 3s6zm-3qaaa-aaaag-ak6eq-cai
+
 
 How Amplify works
 An Amplify campaign follows a simple sequence of events:
@@ -11,33 +74,3 @@ At the end of a campaign life cycle:
 
 The creator/project gains engagement on their post and reaches the right target audience (ICP users).
 Users/participants can earn rewards for engaging in and winning campaigns.
-How Amplify is built
-Here’s a detailed breakdown of the technologies involved:
-
-ICP Smart Contracts: The smart contracts are written in Rust
-ICRC2 Token Standard: Amplify supports the ICRC2 token standard for secure and efficient token transactions.
-
-Frontend:
-
-TypeScript: Provides static type-checking, improving code quality.
-React: Enables a dynamic and responsive user interface.
-TailwindCSS: Assists in quickly styling components with a utility-first CSS framework.
-Vite: Bundles and builds the Frontend with fast performance.
-
-Backend:
-
-TypeScript: Ensures type safety and better code maintainability.
-PostgreSQL: A reliable relational database for data storage and management.
-Node.js: Provides a JavaScript runtime for server-side scripting.
-Adonis.js Framework: A robust backend framework to handle complex business logic.
-Twitter API v2.0: Integrates features for Interacting with Twitter (X) directly from the Amplify platform.
-
-Highlights:
-
-Secure Architecture: Ensures robust protection for data and transactions.
-User-Friendly Design: Simplifies user interaction by minimizing complexity.
-Scalability: We can easily integrate other social media Platforms (Web2 and Web3) and scale up.
-
-How Amplify Uses Random Number Generation (RNG) on ICP
-
-Consensus-Driven Randomness: The Internet Computer uses its consensus mechanism to produce random numbers that are unpredictable and verifiably fair. The randomness is derived from a process involving many nodes, making it tamper-resistant and decentralized, thus creating a fair raffle system in picking campaign winners.
