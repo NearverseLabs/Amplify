@@ -1,0 +1,40 @@
+{
+  "canisters": {
+    "amplify_sc_rust_backend": {
+      "candid": "src/amplify_sc_rust_backend/amplify_sc_rust_backend.did",
+      "package": "amplify_sc_rust_backend",
+      "type": "rust"
+    },
+    "amplify_sc_rust_frontend": {
+      "dependencies": [
+        "amplify_sc_rust_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/amplify_sc_rust_frontend/src/index.html"
+      },
+      "source": [
+        "src/amplify_sc_rust_frontend/assets",
+        "dist/amplify_sc_rust_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    },
+    "test": {
+      "bind": "13.49.84.77:35615",
+      "type": "ephemeral"
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
