@@ -9,7 +9,12 @@ export interface PaginatedCampaigns {
 export interface PaginatedCampaign {
   id: number;
   user_id: null;
+  user: null | {
+    address: string;
+  };
   project_name: string;
+  join_group: string;
+  join_community: string;
   tweet_id: string;
   campaign_id: number;
   winners: number;

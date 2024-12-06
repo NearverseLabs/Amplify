@@ -158,15 +158,35 @@ const CampaignDetails = ({ setOpenCampaign, campaign, onEnter }: IProps) => {
             <CheckUncheckIcon type={campaign.requirements.messages_in_group} />
           </div>
           <div className="mt-5 flex items-center justify-between gap-4">
-            {/* <Button
-              onClick={() => {
-                window.open(campaign.tweet_id, "_blank");
-              }}
-              variant="dark"
-              // disabled={!isParticipated}
-            >
-              Go to Tweet
-            </Button> */}
+            {campaign.join_group && (
+              <Button
+                onClick={() => {
+                  window.open(
+                    `https://oc.app/group/${campaign.join_group}/?ref=${campaign?.user?.address}`,
+                    "_blank",
+                  );
+                }}
+                variant="dark"
+                // disabled={!isParticipated}
+              >
+                Join Group
+              </Button>
+            )}
+            {campaign.join_community && (
+              <Button
+                onClick={() => {
+                  const [com, chan] = campaign.join_community.split(":");
+                  window.open(
+                    `https://oc.app/community/${com}/channel/${chan}/?ref=${campaign?.user?.address}`,
+                    "_blank",
+                  );
+                }}
+                variant="dark"
+                // disabled={!isParticipated}
+              >
+                Join Community
+              </Button>
+            )}
             {moment(campaign.ends_at).isAfter(moment()) && (
               <Button
                 isLoading={isloading}
