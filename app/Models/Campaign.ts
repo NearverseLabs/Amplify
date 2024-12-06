@@ -43,7 +43,7 @@ export default class Campaign extends compose(BaseModel, Filterable) {
   @column()
   public user_id: number
 
-  @belongsTo(() => User)
+  @belongsTo(() => User, { foreignKey: 'user_id' })
   public user: BelongsTo<typeof User>
 
   @hasMany(() => Participation)

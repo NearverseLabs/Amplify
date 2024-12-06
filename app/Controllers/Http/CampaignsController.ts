@@ -224,16 +224,17 @@ export default class CampaignsController {
 
   public async index({ request, response }: HttpContextContract) {
     const { page = 1, limit = 10, ...input } = request.qs()
-    return response
-      .status(200)
-      .json(
-        (
-          await Campaign.filter(input)
-            .withCount('participants')
-            .orderBy('createdAt', 'desc')
-            .paginate(page, limit)
-        ).toJSON()
-      )
+    return response.status(200).json(
+      (
+        await Campaign.filter(input)
+          .withCount('participants')
+          .preload('user', (a) => {
+            a.select('address')
+          })
+          .orderBy('createdAt', 'desc')
+          .paginate(page, limit)
+      ).toJSON()
+    )
   }
   public async winners({ request, response }: HttpContextContract) {
     const { page = 1, limit = 10 } = request.qs()
