@@ -18,6 +18,7 @@ pub struct StateStorage {
     pub total_users: u64,
     pub total_campaigns: u64,
     pub usernames: BTreeMap<String, Principal>,
+    pub taggr_usernames: BTreeMap<String, Principal>,
 }
 
 #[derive(Clone, CandidType, Deserialize, Serialize, Debug)]
@@ -37,7 +38,8 @@ pub struct Settings {
 
 #[derive(Clone, CandidType, Deserialize, Serialize, Debug)]
 pub struct Users {
-    pub(crate) twitter_username: String,
+    pub(crate) taggr_principal: Option<String>,
+    pub(crate) openchat_principal: Option<String>,
     pub(crate) name: String,
     pub(crate) id: Principal,
 }
@@ -68,36 +70,57 @@ pub struct CampaignFilter {
     pub status: Option<CampaignStatus>,
 }
 
+#[derive(Clone, Debug, CandidType, Deserialize, Serialize)]
+pub enum CampaignPlatform {
+    OpenChat,
+    Taggr,
+}
+
 #[derive(Clone, CandidType, Deserialize, Serialize, Debug)]
 pub struct CreateCampaignRequirements {
     pub(crate) follow: bool,
     pub(crate) like: bool,
-    pub(crate) retweet: bool,
-    pub(crate) quote_retweet: bool,
-    pub(crate) tweet_reply: bool,
+    pub(crate) comment: bool,
+    pub(crate) repost: bool,
+
+    pub(crate) join_group: bool,
+    pub(crate) join_community: bool,
+    pub(crate) active_in_community_time: bool,
+    pub(crate) messages_in_community: bool,
+    pub(crate) active_in_group_time: bool,
+    pub(crate) messages_in_group: bool,
 }
 #[derive(Clone, CandidType, Deserialize, Serialize)]
 pub struct CreateCampaignArgs {
     pub(crate) requirements: CreateCampaignRequirements,
+    pub(crate) platform: CampaignPlatform,
     pub(crate) reward: Tokens,
     pub(crate) reward_token: Principal,
     pub(crate) winners: u64,
     pub(crate) project_name: String,
-    pub(crate) tweet_id: String,
     pub(crate) starts_at: u64,
     pub(crate) ends_at: u64,
     pub(crate) user_id: Principal,
+
+    pub(crate) join_group: Option<String>,
+    pub(crate) join_community: Option<String>,
+    pub(crate) active_in_community_time: u64,
+    pub(crate) messages_in_community: u64,
+    pub(crate) active_in_group_time: u64,
+    pub(crate) messages_in_group: u64,
 }
 
 #[derive(Clone, CandidType, Deserialize, Serialize, Debug)]
 pub struct Campaign {
+    pub(crate) campaign_id: u64,
+
     pub(crate) requirements: CreateCampaignRequirements,
+    pub(crate) platform: CampaignPlatform,
+
     pub(crate) reward: Tokens,
     pub(crate) reward_token: Principal,
     pub(crate) winners: u64,
-    pub(crate) campaign_id: u64,
     pub(crate) project_name: String,
-    pub(crate) tweet_id: String,
     pub(crate) starts_at: u64,
     pub(crate) ends_at: u64,
     pub(crate) total_withdrawn: u64,
@@ -106,6 +129,13 @@ pub struct Campaign {
     pub(crate) user_id: Principal,
     pub(crate) participants: BTreeMap<Principal, Participant>,
     pub(crate) selected_winners: BTreeMap<Principal, Participant>,
+
+    pub(crate) join_group: Option<String>,
+    pub(crate) join_community: Option<String>,
+    pub(crate) active_in_community_time: u64,
+    pub(crate) messages_in_community: u64,
+    pub(crate) active_in_group_time: u64,
+    pub(crate) messages_in_group: u64,
 }
 
 #[derive(Clone, CandidType, Deserialize, Serialize, Debug)]
@@ -120,25 +150,31 @@ impl Campaign {
     pub(crate) fn to_create_campaign_args(&self) -> CreateCampaignArgs {
         CreateCampaignArgs {
             requirements: self.requirements.clone(),
+            platform: self.platform.clone(),
             reward: self.reward.clone(),
-            reward_token: self.reward_token,
+            reward_token: self.reward_token.clone(),
             winners: self.winners,
             project_name: self.project_name.clone(),
-            tweet_id: self.tweet_id.clone(),
             starts_at: self.starts_at,
             ends_at: self.ends_at,
             user_id: self.user_id,
+            join_group: self.join_group.clone(),
+            join_community: self.join_community.clone(),
+            active_in_community_time: self.active_in_community_time,
+            messages_in_community: self.messages_in_community,
+            active_in_group_time: self.active_in_group_time,
+            messages_in_group: self.messages_in_group,
         }
     }
     pub(crate) fn without_participants_and_winners(&self) -> Campaign {
         Campaign {
             requirements: self.requirements.clone(),
+            platform: self.platform.clone(),
             reward: self.reward.clone(),
             reward_token: self.reward_token,
             winners: self.winners,
             campaign_id: self.campaign_id.clone(),
             project_name: self.project_name.clone(),
-            tweet_id: self.tweet_id.clone(),
             starts_at: self.starts_at,
             ends_at: self.ends_at,
             user_id: self.user_id,
@@ -147,6 +183,13 @@ impl Campaign {
             participants: BTreeMap::new(),
             selected_winners: BTreeMap::new(),
             is_deposited: self.is_deposited,
+
+            join_group: self.join_group.clone(),
+            join_community: self.join_community.clone(),
+            active_in_community_time: self.active_in_community_time,
+            messages_in_community: self.messages_in_community,
+            active_in_group_time: self.active_in_group_time,
+            messages_in_group: self.messages_in_group,
         }
     }
 }

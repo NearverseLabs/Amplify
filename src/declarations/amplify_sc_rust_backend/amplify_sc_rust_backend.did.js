@@ -6,29 +6,44 @@ export const idlFactory = ({ IDL }) => {
     'is_verified' : IDL.Bool,
   });
   const Principal = IDL.Principal;
+  const CampaignPlatform = IDL.Variant({
+    'Taggr' : IDL.Null,
+    'OpenChat' : IDL.Null,
+  });
   const CreateCampaignRequirements = IDL.Record({
-    'retweet' : IDL.Bool,
+    'messages_in_group' : IDL.Bool,
+    'repost' : IDL.Bool,
+    'active_in_group_time' : IDL.Bool,
     'like' : IDL.Bool,
-    'quote_retweet' : IDL.Bool,
-    'tweet_reply' : IDL.Bool,
+    'active_in_community_time' : IDL.Bool,
+    'comment' : IDL.Bool,
+    'join_community' : IDL.Bool,
+    'messages_in_community' : IDL.Bool,
     'follow' : IDL.Bool,
+    'join_group' : IDL.Bool,
   });
   const Campaign = IDL.Record({
+    'messages_in_group' : IDL.Nat64,
     'reward' : Tokens,
     'participants' : IDL.Vec(Participant),
-    'tweet_id' : IDL.Text,
     'starts_at' : IDL.Nat64,
     'selected_winners' : IDL.Vec(Participant),
+    'active_in_group_time' : IDL.Nat64,
     'reward_token' : Principal,
     'is_deposited' : IDL.Bool,
     'ends_at' : IDL.Nat64,
+    'active_in_community_time' : IDL.Nat64,
+    'platform' : CampaignPlatform,
     'user_id' : IDL.Principal,
     'is_verified' : IDL.Bool,
     'requirements' : CreateCampaignRequirements,
     'campaign_id' : IDL.Nat64,
+    'join_community' : IDL.Opt(IDL.Text),
     'project_name' : IDL.Text,
     'winners' : IDL.Nat64,
+    'messages_in_community' : IDL.Nat64,
     'total_withdrawn' : IDL.Nat64,
+    'join_group' : IDL.Opt(IDL.Text),
   });
   const CommonResultCampaign = IDL.Variant({
     'Ok' : Campaign,
@@ -36,15 +51,21 @@ export const idlFactory = ({ IDL }) => {
   });
   const CommonResult = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
   const CreateCampaignArgs = IDL.Record({
+    'messages_in_group' : IDL.Nat64,
     'reward' : Tokens,
-    'tweet_id' : IDL.Text,
     'starts_at' : IDL.Nat64,
+    'active_in_group_time' : IDL.Nat64,
     'reward_token' : Principal,
     'ends_at' : IDL.Nat64,
+    'active_in_community_time' : IDL.Nat64,
+    'platform' : CampaignPlatform,
     'user_id' : IDL.Principal,
     'requirements' : CreateCampaignRequirements,
+    'join_community' : IDL.Opt(IDL.Text),
     'project_name' : IDL.Text,
     'winners' : IDL.Nat64,
+    'messages_in_community' : IDL.Nat64,
+    'join_group' : IDL.Opt(IDL.Text),
   });
   const CampaignResult = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
   const Settings = IDL.Record({
@@ -55,8 +76,9 @@ export const idlFactory = ({ IDL }) => {
   });
   const Users = IDL.Record({
     'id' : IDL.Principal,
+    'openchat_principal' : IDL.Opt(IDL.Text),
     'name' : IDL.Text,
-    'twitter_username' : IDL.Text,
+    'taggr_principal' : IDL.Opt(IDL.Text),
   });
   const CommonResultUser = IDL.Variant({ 'Ok' : Users, 'Err' : IDL.Text });
   const WhiteListedToken = IDL.Record({

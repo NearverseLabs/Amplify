@@ -18,6 +18,7 @@ pub struct StableState {
     pub ledger: Option<Principal>,
     pub users: BTreeMap<Principal, Users>,
     pub usernames: BTreeMap<String, Principal>,
+    pub taggr_usernames: BTreeMap<String, Principal>,
     pub campaigns: BTreeMap<u64, Campaign>,
     pub whitelisted_tokens: BTreeMap<Principal, WhiteListedToken>,
     pub settings: Settings,
@@ -31,6 +32,7 @@ impl Default for StableState {
             total_users: Default::default(),
             total_campaigns: Default::default(),
             usernames: Default::default(),
+            taggr_usernames: Default::default(),
             ledger: Default::default(),
             users: BTreeMap::new(),
             campaigns: BTreeMap::new(),
@@ -53,6 +55,7 @@ impl From<StateStorage> for StableState {
             total_users: input.total_users,
             total_campaigns: input.total_campaigns,
             usernames: input.usernames,
+            taggr_usernames: input.taggr_usernames,
             ledger: input.ledger,
             users: input.users,
             campaigns: input.campaigns,
@@ -64,10 +67,6 @@ impl From<StateStorage> for StableState {
 
 impl StableState {
     pub fn create_campaign(&mut self, args: CreateCampaignArgs) -> CampaignResult {
-        match self.check_if_service_account() {
-            CommonResult::Err(e) => return CampaignResult::Err(e),
-            _ => {},
-        }
         let token = self.whitelisted_tokens.get(&args.reward_token);
         if token.is_none() {
             return CampaignResult::Err("Reward token is not whitelisted.".to_string());
@@ -96,10 +95,18 @@ impl StableState {
             winners: args.winners,
             campaign_id: campaign_id.clone(),
             project_name: args.project_name,
-            tweet_id: args.tweet_id,
+            platform: args.platform,
             starts_at: args.starts_at,
             ends_at: args.ends_at,
             user_id: args.user_id,
+
+            join_group: args.join_group,
+            join_community: args.join_community,
+            active_in_community_time: args.active_in_community_time,
+            messages_in_community: args.messages_in_community,
+            active_in_group_time: args.active_in_group_time,
+            messages_in_group: args.messages_in_group,
+
             total_withdrawn: 0,
             is_verified: false,
             is_deposited: false,
@@ -108,7 +115,7 @@ impl StableState {
         };
         self.campaigns.insert(campaign_id.clone(), campaign);
         self.total_campaigns = campaign_id_number;
-        return CampaignResult::Ok(campaign_id.clone())
+        CampaignResult::Ok(campaign_id.clone())
     }
     pub async fn deposit_campaign(&mut self, campaign_id: u64) -> CommonResult {
         let caller = caller().unwrap_or_else(|e| trap(&e));
@@ -169,42 +176,65 @@ impl StableState {
     }
 
     pub fn register_user(&mut self, args: Users) -> CommonResult {
-        match self.check_if_service_account() {
-            CommonResult::Err(e) => return CommonResult::Err(e),
-            _ => {},
-        }
+        // match self.check_if_service_account() {
+        //     CommonResult::Err(e) => return CommonResult::Err(e),
+        //     _ => {},
+        // }
         if self.users.contains_key(&args.id) {
             return CommonResult::Err("User already registered.".to_string());
         }
-        if self.usernames.contains_key(&args.twitter_username) {
-            return CommonResult::Err("Username already registered.".to_string());
+        if(args.openchat_principal.is_some()) {
+            let username = args.openchat_principal.clone().unwrap();
+            if self.usernames.contains_key(&username.clone()) {
+                return CommonResult::Err("OC Username already registered.".to_string());
+            }
+            self.usernames.insert(username.clone(), args.id);
         }
-        self.usernames.insert(args.twitter_username.clone(), args.id);
+        if(args.taggr_principal.is_some()) {
+            let username = args.taggr_principal.clone().unwrap();
+            if self.taggr_usernames.contains_key(&username.clone()) {
+                return CommonResult::Err("Taggr Username already registered.".to_string());
+            }
+            self.taggr_usernames.insert(username.clone(), args.id);
+        }
+
         self.users.insert(args.id, args);
         self.total_users = self.total_users.clone() + 1;
         CommonResult::Ok(true)
     }
     pub fn update_user(&mut self, args: Users) -> CommonResult {
-        match self.check_if_service_account() {
-            CommonResult::Err(e) => return CommonResult::Err(e),
-            _ => {},
-        }
+        // match self.check_if_service_account() {
+        //     CommonResult::Err(e) => return CommonResult::Err(e),
+        //     _ => {},
+        // }
         if self.users.contains_key(&args.id.clone()) {
             if let Some(user) = self.users.get_mut(&args.id.clone()) {
-                user.twitter_username = args.twitter_username.clone();
+                if(args.openchat_principal.is_some()) {
+                    let username = args.openchat_principal.clone().unwrap();
+                    if self.usernames.contains_key(&username.clone()) {
+                        return CommonResult::Err("OC Username already registered.".to_string());
+                    }
+                    user.openchat_principal = args.openchat_principal.clone();
+                    self.usernames.insert(username.clone(), args.id);
+                }
+                if(args.taggr_principal.is_some()) {
+                    let username = args.taggr_principal.clone().unwrap();
+                    if self.taggr_usernames.contains_key(&username.clone()) {
+                        return CommonResult::Err("Taggr Username already registered.".to_string());
+                    }
+                    user.taggr_principal = args.taggr_principal.clone();
+                    self.taggr_usernames.insert(username.clone(), args.id);
+                }
             }
-        } else {
-            self.users.insert(args.id.clone(), args.clone());
-            self.total_users = self.total_users.clone() + 1;
         }
-        self.usernames.insert(args.twitter_username.clone(), args.id);
         CommonResult::Ok(true)
     }
     pub fn get_user(&self, user_address: Principal) -> CommonResultUser {
         match self.users.get(&user_address) {
             Some(user) => {
                 let res = Users {
-                    twitter_username: user.twitter_username.clone(),
+                    taggr_principal: user.taggr_principal.clone(),
+                    openchat_principal: user.openchat_principal.clone(),
                     name: user.name.clone(),
                     id: user_address,
                 };
@@ -253,6 +283,7 @@ impl StableState {
         }
         CommonResult::Ok(true)
     }
+
     pub fn submit_participants(&mut self, campaign_id: u64, participants: Vec<Principal>) -> CommonResult {
         match self.check_if_service_account() {
             CommonResult::Err(e) => return CommonResult::Err(e),

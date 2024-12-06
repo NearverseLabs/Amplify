@@ -217,7 +217,8 @@ fn paginate_users(args: PaginationArgs) -> Vec<Users> {
         for (index, (user_id, user_args)) in state_ref.users.iter().enumerate() {
             if index >= start_index && index < end_index {
                 paginated_users.push(Users {
-                    twitter_username: user_args.twitter_username.clone(),
+                    taggr_principal: user_args.taggr_principal.clone(),
+                    openchat_principal: user_args.openchat_principal.clone(),
                     name: user_args.name.clone(),
                     id: user_id.clone(),
                 });
@@ -471,14 +472,16 @@ fn paginate_participants(campaign_id: u64, args: PaginationArgs) -> (Vec<Partici
                 if index >= start_index && index < end_index {
                     paginated_participants.push(winner.clone());
                     let mut res = Users {
-                        twitter_username: "".to_string(),
+                        openchat_principal: Some("".to_string()),
+                        taggr_principal: Some("".to_string()),
                         name: "".to_string(),
                         id: user_address.clone(),
                     };
                     match state_ref.users.get(&user_address.clone()) {
                         Some(user) => {
                             res = Users {
-                                twitter_username: user.twitter_username.clone(),
+                                openchat_principal: user.openchat_principal.clone(),
+                                taggr_principal: user.taggr_principal.clone(),
                                 name: user.name.clone(),
                                 id: user_address.clone(),
                             };

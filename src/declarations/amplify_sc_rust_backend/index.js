@@ -10,8 +10,7 @@ export { idlFactory } from "./amplify_sc_rust_backend.did.js";
  * beginning in dfx 0.15.0
  */
 export const canisterId =
-  process.env.CANISTER_ID_AMPLIFY_SC_RUST_BACKEND ||
-  process.env.AMPLIFY_SC_RUST_BACKEND_CANISTER_ID;
+  process.env.CANISTER_ID_AMPLIFY_SC_RUST_BACKEND;
 
 export const createActor = (canisterId, options = {}) => {
   const agent = options.agent || new HttpAgent({ ...options.agentOptions });
@@ -40,4 +39,4 @@ export const createActor = (canisterId, options = {}) => {
   });
 };
 
-export const amplify_sc_rust_backend = createActor(canisterId);
+export const amplify_sc_rust_backend = canisterId ? createActor(canisterId) : undefined;

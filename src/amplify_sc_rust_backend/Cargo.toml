@@ -25,6 +25,8 @@ ic-stable-structures = "0.6.0"
 icrc-ledger-types = "0.1.4"
 getrandom = { version = "0.2", features = ["custom"] }
 rand = { version = "0.8.5", features = [] }
+group_canister_c2c_client = { git = "https://github.com/open-chat-labs/open-chat.git", version = "0.1.0", tag = "v2.0.1499-community" }
+community_canister_c2c_client = { git = "https://github.com/open-chat-labs/open-chat.git", version = "0.1.0", tag = "v2.0.1499-community" }
 
-[dev-dependencies]
-tokio = { features = ["macros", "rt"] }
+#[dev-dependencies]
+#tokio = { features = ["macros", "rt"] }
