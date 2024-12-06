@@ -17,6 +17,7 @@ WORKDIR $APP_HOME
 
 
 FROM base AS dependencies
+ADD packages ./packages
 COPY --chown=cloudron:cloudron ./package.json yarn.lock ./
 RUN yarn install
 COPY --chown=cloudron:cloudron . .
@@ -32,8 +33,11 @@ ENV APP_HOME=/app/code
 ENV PORT=3333
 ENV HOST=0.0.0.0
 WORKDIR $APP_HOME
+ADD packages ./packages
 COPY --chown=cloudron:cloudron ./package.json ./yarn.lock ./docker-entrypoint.sh supervisord.conf ./
-RUN yarn install
+RUN yarn install && yarn postinstall
+RUN cd node_modules/msgpackr && NODE_ENV=development yarn
+RUN cd $APP_HOME
 COPY --chown=cloudron:cloudron --from=build $APP_HOME/build .
 RUN chown root:root docker-entrypoint.sh
 RUN mkdir -p $APP_DATA && touch $APP_DATA/env && rm -rf $APP_HOME/.env && ln -s $APP_DATA/env $APP_HOME/.env

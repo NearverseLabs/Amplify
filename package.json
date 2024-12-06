@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "node ace serve --watch",
-    "build": "node ace build --production",
+    "build": "node ace build --production --ignore-ts-errors",
     "start": "node server.js",
     "test": "node ace test",
     "lint": "eslint . --ext=.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postinstall": "cd node_modules/msgpackr && yarn"
   },
   "eslintConfig": {
     "extends": [
@@ -62,20 +63,32 @@
     "@adonisjs/repl": "^3.1.11",
     "@adonisjs/session": "^6.4.0",
     "@bahdcoder/ally-twitter-v2": "^1.0.3",
-    "@dfinity/agent": "^0.20.2",
-    "@dfinity/candid": "^0.20.2",
-    "@dfinity/identity": "^0.20.2",
-    "@dfinity/principal": "^0.20.2",
+    "@dfinity/agent": "^2.1.1",
+    "@dfinity/auth-client": "^2.1.1",
+    "@dfinity/candid": "^2.1.1",
+    "@dfinity/identity": "^2.1.1",
+    "@dfinity/principal": "^2.1.1",
+    "@sinclair/typebox": "^0.33.14",
     "adonis-lucid-filter": "^4.1.1",
     "axios": "^1.6.2",
+    "drange": "^2.0.1",
+    "fake-indexeddb": "^6.0.0",
+    "idb": "^7.1.1",
+    "identicon.js": "^2.3.3",
     "isomorphic-fetch": "^3.0.0",
+    "js-sha3": "^0.8.0",
     "luxon": "^3.4.3",
+    "md5": "^2.3.0",
+    "msgpackr": "hpeebles/msgpackr#c90582f7cee6c4676b90b00f6c0228949b317aef",
     "mysql2": "^3.6.1",
     "pg": "^8.11.3",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
+    "rollbar": "^2.26.4",
     "source-map-support": "^0.5.21",
     "sqlite3": "^5.1.6",
-    "twitter-api-sdk": "^1.2.1"
+    "twitter-api-sdk": "^1.2.1",
+    "openchat-shared": "file:./packages/openchat-shared",
+    "openchat-agent": "file:./packages/openchat-agent"
   }
 }

@@ -8,6 +8,7 @@
 */
 
 require('reflect-metadata')
+require('fake-indexeddb/auto')
 require('source-map-support').install({ handleUncaughtExceptions: false })
 
 const { Ignitor } = require('@adonisjs/core/build/standalone')

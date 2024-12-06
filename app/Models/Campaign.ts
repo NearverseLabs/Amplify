@@ -19,9 +19,14 @@ import Participation from 'App/Models/Participation'
 export interface Requirements {
   follow: boolean
   like: boolean
-  retweet: boolean
-  quote_retweet: boolean
-  tweet_reply: boolean
+  comment: boolean
+  repost: boolean
+  join_group: boolean
+  join_community: boolean
+  active_in_group_time: boolean
+  messages_in_group: boolean
+  active_in_community_time: boolean
+  messages_in_community: boolean
 }
 export default class Campaign extends compose(BaseModel, Filterable) {
   static $filter = () => CampaignFilter
@@ -66,6 +71,33 @@ export default class Campaign extends compose(BaseModel, Filterable) {
   public reward: string
 
   @column()
+  public platform: string
+
+  @column()
+  public messages_in_community: number
+
+  @column()
+  public messages_in_group: number
+
+  @column()
+  public active_in_community_time: number
+
+  @column()
+  public active_in_group_time: number
+
+  @column()
+  public join_group: string
+
+  @column()
+  public join_community: string
+
+  @column()
+  public oc_group_campaign_last_event_id: number
+
+  @column()
+  public oc_community_campaign_last_event_id: number
+
+  @column()
   public finalised: boolean
 
   @column({
@@ -83,9 +115,14 @@ export default class Campaign extends compose(BaseModel, Filterable) {
         return {
           follow: false,
           like: false,
-          retweet: false,
-          quote_retweet: false,
-          tweet_reply: false,
+          comment: false,
+          repost: false,
+          join_group: false,
+          join_community: false,
+          active_in_group_time: false,
+          messages_in_group: false,
+          active_in_community_time: false,
+          messages_in_community: false,
         }
       }
     },
@@ -126,6 +163,10 @@ export default class Campaign extends compose(BaseModel, Filterable) {
   public static async mapValues(campaign: Campaign) {
     const ctx = HttpContext.get()!
     let isCurrentUser = ctx?.auth?.use('web').user?.id
+    // if (!isCurrentUser) {
+    //   const { user_id } = ctx.request.qs()
+    //   isCurrentUser = (await User.query().where('address', user_id).first())?.id
+    // }
     if (isCurrentUser) {
       const participated = await Participation.query()
         .where('user_id', isCurrentUser)

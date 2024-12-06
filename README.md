@@ -41,7 +41,7 @@ cd amplify
 ```
 3. **Checkout**
 ```
-git checkout backend
+git checkout frontend
 ```
 
 4. **Install dependencies**
@@ -68,28 +68,14 @@ yarn dev
 ## Env Variables
 
 ```
-PORT=3333
-HOST=0.0.0.0
-NODE_ENV=development
-APP_KEY=
-DRIVE_DISK=local
-DB_CONNECTION=pg
-PG_HOST=127.0.0.1
-PG_PORT=5432
-PG_USER=lucid
-PG_PASSWORD=
-PG_DB_NAME=lucid
-SESSION_DRIVER=cookie
-
-
-TWITTER_CLIENT_ID=
-TWITTER_CLIENT_SECRET=
-TWITTER_CALLBACK_URL=http://127.0.0.1/twitter/callback
-TWITTER_V2_CLIENT_ID=
-TWITTER_V2_CLIENT_SECRET=
-TWITTER_V2_CALLBACK_URL=
-
-ICP_HOST="https://icp0.io"
-
-CANISTER_ID_AMPLIFY_SC_RUST_BACKEND='3s6zm-3qaaa-aaaag-ak6eq-cai'
+DFX_VERSION='0.15.1'
+VITE_DFX_NETWORK='ic'
+DFX_NETWORK='ic'
+VITE_BACKEND_URL="BACKEND_LINK/api"
+API_URL="https://icp0.io"
+VITE_ICRC1_LEDGER_CANISTER_CANISTER_ID='2ouva-viaaa-aaaaq-aaamq-cai'
+VITE_CANISTER_ID_ICRC1_INDEX_CANISTER='be2us-64aaa-aaaaa-qaabq-cai'
+VITE_ICP_LEDGER_CANISTER_CANISTER_ID='ryjl3-tyaaa-aaaaa-aaaba-cai'
+VITE_CANISTER_ID_ICP_LEDGER_CANISTER='ryjl3-tyaaa-aaaaa-aaaba-cai'
+VITE_CANISTER_ID_AMPLIFY_SC_RUST_BACKEND='3s6zm-3qaaa-aaaag-ak6eq-cai'
 ```

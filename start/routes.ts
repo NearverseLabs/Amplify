@@ -27,6 +27,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import { alice, backend } from 'App/Handlers/Actor'
 import { Principal } from '@dfinity/principal'
 import Logger from '@ioc:Adonis/Core/Logger'
+import { openchatAgent } from 'App/Handlers/GetOpenChatSDK'
 
 Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
@@ -46,6 +47,27 @@ Route.get('/twitter/user/:username', async ({ request }) => {
 Route.get('/twitter/redirect/:principal', async ({ ally, request, session }) => {
   session.put('my-address', request.param('principal'))
   return ally.use('twitter_v2').redirect()
+})
+
+Route.get('/test', async ({}) => {
+  const summary = await openchatAgent.getCommunitySummary('67qeu-oaaaa-aaaaf-bmura-cai')
+  if (summary.kind !== 'community') throw new Error('Unable to open chat')
+  return summary
+  // const x = summary.group.latestMessageIndex || 0
+  // const y = (summary.group.latestMessageIndex || 0) + 100
+  const resp = await openchatAgent.getGroupDetails(
+    {
+      kind: 'channel',
+      communityId: '67qeu-oaaaa-aaaaf-bmura-cai',
+      channelId: '131808037317481632487667980530052334896',
+    },
+    // [0, summary.latestEventIndex || 0],
+    // 0,
+    // true,
+    0n
+    // undefined
+  )
+  return resp
 })
 
 Route.get('/twitter/callback', async ({ ally, response, session, auth }) => {
@@ -91,14 +113,16 @@ Route.get('/twitter/callback', async ({ ally, response, session, auth }) => {
     }
     if ('Ok' in done) {
       if (!done.Ok) throw Error(`Register Failed: Something went wrong`)
-      if (done.Ok.twitter_username !== twitterUser.nickName || done.Ok.id.toString() !== address)
-        throw Error(`Login Failed: Username & wallet address is not matching`)
+      // if (done.Ok.twitter_username !== twitterUser.nickName || done.Ok.id.toString() !== address)
+      //   throw Error(`Login Failed: Username & wallet address is not matching`)
     }
   } catch (e) {
-    if (e.message !== 'Login Failed: Username & wallet address is not matching') {
+    if (e?.message !== 'Login Failed: Username & wallet address is not matching') {
       const done = await backendActor.register_user({
+        openchat_principal: [],
+        taggr_principal: [],
         name: twitterUser.name,
-        twitter_username: twitterUser.nickName,
+        // twitter_username: twitterUser.nickName,
         id: Principal.fromText(address),
       })
       if ('Err' in done) {
@@ -123,8 +147,8 @@ Route.get('/twitter/callback', async ({ ally, response, session, auth }) => {
       avatar_url: twitterUser.avatarUrl,
       account_id: twitterUser.id,
       // twitter_access_token: twitterUser.token.token,
-      email_verified_at:
-        twitterUser.emailVerificationState === 'verified' ? DateTime.now() : undefined,
+      // email_verified_at:
+      //   twitterUser.emailVerificationState === 'verified' ? DateTime.now() : undefined,
     }
   )
   response.abortIf(
@@ -199,8 +223,10 @@ Route.get('/update-username', async ({ auth, response, request }) => {
     const { username } = request.qs()
 
     const done = await backendActor.update_user({
+      openchat_principal: [],
+      taggr_principal: [],
       name: username,
-      twitter_username: username,
+      // twitter_username: username,
       id: Principal.fromText(user.address),
     })
     if ('Err' in done) {
@@ -214,6 +240,6 @@ Route.get('/update-username', async ({ auth, response, request }) => {
 }).middleware('auth')
 
 Route.get('/campaigns', 'CampaignsController.index')
-Route.post('/campaigns', 'CampaignsController.create').middleware('auth')
-Route.post('/participate', 'CampaignsController.participate').middleware('auth')
+Route.post('/campaigns', 'CampaignsController.create')
+Route.post('/participate', 'CampaignsController.participate')
 Route.get('/winners/:campaign_id', 'CampaignsController.winners')

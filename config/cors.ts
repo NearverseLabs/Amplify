@@ -49,6 +49,9 @@ const corsConfig: CorsConfig = {
     'localhost:3000',
     'amplify-backend.aticloud.atican.dev',
     'amplify-frontendreact.atican.dev',
+    'amplify-icp.com',
+    'www.amplify-icp.com',
+    'backend.amplify-icp.com',
   ],
 
   /*

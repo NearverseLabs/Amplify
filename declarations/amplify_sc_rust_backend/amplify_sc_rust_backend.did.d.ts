@@ -1,22 +1,29 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
+import type { IDL } from '@dfinity/candid';
 
 export interface Campaign {
+  'messages_in_group' : bigint,
   'reward' : Tokens,
   'participants' : Array<Participant>,
-  'tweet_id' : string,
   'starts_at' : bigint,
   'selected_winners' : Array<Participant>,
+  'active_in_group_time' : bigint,
   'reward_token' : Principal,
   'is_deposited' : boolean,
   'ends_at' : bigint,
+  'active_in_community_time' : bigint,
+  'platform' : CampaignPlatform,
   'user_id' : Principal,
   'is_verified' : boolean,
   'requirements' : CreateCampaignRequirements,
   'campaign_id' : bigint,
+  'join_community' : [] | [string],
   'project_name' : string,
   'winners' : bigint,
+  'messages_in_community' : bigint,
   'total_withdrawn' : bigint,
+  'join_group' : [] | [string],
 }
 export interface CampaignFilter {
   'status' : [] | [CampaignStatus],
@@ -28,6 +35,8 @@ export interface CampaignFilter {
   'my_unclaimed_campaigns' : [] | [Principal],
   'my_claimed_campaigns' : [] | [Principal],
 }
+export type CampaignPlatform = { 'Taggr' : null } |
+  { 'OpenChat' : null };
 export type CampaignResult = { 'Ok' : bigint } |
   { 'Err' : string };
 export type CampaignStatus = { 'Ended' : null } |
@@ -44,22 +53,33 @@ export type CommonResultUser = { 'Ok' : Users } |
 export type CommonResultUsers = { 'Ok' : Array<Users> } |
   { 'Err' : string };
 export interface CreateCampaignArgs {
+  'messages_in_group' : bigint,
   'reward' : Tokens,
-  'tweet_id' : string,
   'starts_at' : bigint,
+  'active_in_group_time' : bigint,
   'reward_token' : Principal,
   'ends_at' : bigint,
+  'active_in_community_time' : bigint,
+  'platform' : CampaignPlatform,
   'user_id' : Principal,
   'requirements' : CreateCampaignRequirements,
+  'join_community' : [] | [string],
   'project_name' : string,
   'winners' : bigint,
+  'messages_in_community' : bigint,
+  'join_group' : [] | [string],
 }
 export interface CreateCampaignRequirements {
-  'retweet' : boolean,
+  'messages_in_group' : boolean,
+  'repost' : boolean,
+  'active_in_group_time' : boolean,
   'like' : boolean,
-  'quote_retweet' : boolean,
-  'tweet_reply' : boolean,
+  'active_in_community_time' : boolean,
+  'comment' : boolean,
+  'join_community' : boolean,
+  'messages_in_community' : boolean,
   'follow' : boolean,
+  'join_group' : boolean,
 }
 export type Memo = bigint;
 export interface PaginationArgs { 'page_size' : bigint, 'page_number' : bigint }
@@ -84,8 +104,9 @@ export interface UserCampaign {
 }
 export interface Users {
   'id' : Principal,
+  'openchat_principal' : [] | [string],
   'name' : string,
-  'twitter_username' : string,
+  'taggr_principal' : [] | [string],
 }
 export interface WhiteListedToken {
   'token' : Principal,
@@ -148,3 +169,5 @@ export interface _SERVICE {
     WhiteListedTokenResult
   >,
 }
+export declare const idlFactory: IDL.InterfaceFactory;
+export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];
