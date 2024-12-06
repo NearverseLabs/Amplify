@@ -49,19 +49,21 @@ const CampaignDetails = ({ setOpenCampaign, campaign, onEnter }: IProps) => {
   const navigate = useNavigate();
 
   const praticipateHandler = async () => {
-    if (
-      (campaign.requirements.tweet_reply && !comment) ||
-      (campaign.requirements.quote_retweet && !text)
-    ) {
-      setOpenCommentPopup(true);
-      return;
-    }
+    // if (
+    //   (campaign.requirements.tweet_reply && !comment) ||
+    //   (campaign.requirements.quote_retweet && !text)
+    // ) {
+    //   setOpenCommentPopup(true);
+    //   return;
+    // }
     setOpenCommentPopup(false);
     if (isloading) return;
     setIsloading(true);
     try {
+      await backend.participate_in_campaign(BigInt(campaign.campaign_id));
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/participate`, {
         campaign_id: Number(campaign.id),
+        user_id: principal?.toString(),
         text: text,
         reply: comment,
       });
@@ -123,28 +125,37 @@ const CampaignDetails = ({ setOpenCampaign, campaign, onEnter }: IProps) => {
               )}
           </div>
           <p className="text-xs">
-            Amplify will automatically do the following activities (in green)
-            for you on the current Tweet:
+            Amplify will verify the following activities (in green)
           </p>
           <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"1) Like"}</p>
-            <CheckUncheckIcon type={campaign.requirements.like} />
+            <p className="underline">{"1) Join Group"}</p>
+            <CheckUncheckIcon type={campaign.requirements.join_group} />
           </div>
           <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"2) Follow"}</p>
-            <CheckUncheckIcon type={campaign.requirements.follow} />
+            <p className="underline">{"2) Join Community"}</p>
+            <CheckUncheckIcon type={campaign.requirements.join_community} />
           </div>
           <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"3) Retweet"}</p>
-            <CheckUncheckIcon type={campaign.requirements.retweet} />
+            <p className="underline">{"3) Be Active in Community"}</p>
+            <CheckUncheckIcon
+              type={campaign.requirements.active_in_community_time}
+            />
           </div>
           <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"4) Quote Retweet"}</p>
-            <CheckUncheckIcon type={campaign.requirements.quote_retweet} />
+            <p className="underline">{"4) Be Active in Group"}</p>
+            <CheckUncheckIcon
+              type={campaign.requirements.active_in_group_time}
+            />
           </div>
           <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"5) Comment"}</p>
-            <CheckUncheckIcon type={campaign.requirements.tweet_reply} />
+            <p className="underline">{"5) Message in Community"}</p>
+            <CheckUncheckIcon
+              type={campaign.requirements.messages_in_community}
+            />
+          </div>
+          <div className="my-3 flex items-center justify-between text-sm">
+            <p className="underline">{"6) Message in Group"}</p>
+            <CheckUncheckIcon type={campaign.requirements.messages_in_group} />
           </div>
           <div className="mt-5 flex items-center justify-between gap-4">
             {/* <Button
@@ -176,8 +187,8 @@ const CampaignDetails = ({ setOpenCampaign, campaign, onEnter }: IProps) => {
         setComment={setComment}
         setText={setText}
         onClose={praticipateHandler}
-        reply={campaign.requirements.tweet_reply}
-        tweet={campaign.requirements.quote_retweet}
+        reply={false}
+        tweet={false}
         tweetId={campaign.tweet_id}
         isOpen={openCommentPopup}
         setIsOpen={setOpenCommentPopup}

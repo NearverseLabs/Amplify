@@ -30,9 +30,14 @@ export interface PaginatedCampaign {
 export interface Requirements {
   follow: boolean;
   like: boolean;
-  retweet: boolean;
-  quote_retweet: boolean;
-  tweet_reply: boolean;
+  comment: boolean;
+  repost: boolean;
+  join_group: boolean;
+  join_community: boolean;
+  active_in_group_time: boolean;
+  messages_in_group: boolean;
+  active_in_community_time: boolean;
+  messages_in_community: boolean;
 }
 
 export interface Meta {
@@ -49,10 +54,18 @@ export interface Meta {
 
 export interface CreateCampaignInput {
   project_name: string;
-  tweet_id: string;
+  platform: string;
+  user_id: string;
+  // tweet_id: string;
   winners: string;
   reward_token: string;
   reward: string;
+  messages_in_community: number;
+  messages_in_group: number;
+  active_in_community_time: number;
+  active_in_group_time: number;
+  join_group?: string | null;
+  join_community?: string | null;
   requirements: Requirements;
   startsAt: string;
   endsAt: string;

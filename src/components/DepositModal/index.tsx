@@ -4,7 +4,7 @@ import Button from "../buttons/Button";
 import QrCode from "../QrCode";
 import Input from "@/pages/CreateCampaign/UI/input";
 import { RewardToken } from "@/hooks/useRewardToken";
-import { useIcpConnection } from "@/hooks/useCanisters";
+import { useBackend, useIcpConnection } from "@/hooks/useCanisters";
 import { AccountIdentifier } from "@dfinity/ledger-icp";
 
 const QrSection = ({
@@ -124,3 +124,89 @@ const DepositModal = ({
 };
 
 export default DepositModal;
+
+export const OpenChattModal = ({
+  isOpen,
+  setIsOpen,
+  onClose,
+  token,
+}: {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose: () => void;
+  token: string;
+}) => {
+  const handleDeposit = () => {
+    onClose();
+  };
+  const { isConnected, principal, disconnect, activeProvider } =
+    useIcpConnection({});
+
+  const [userId, setUserId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [backend] = useBackend();
+
+  const submitUser = async () => {
+    if (!principal) return;
+    setLoading(true);
+    try {
+      const liveUser = await backend.update_user({
+        openchat_principal: [userId],
+        id: principal,
+        name: principal?.toString(),
+        taggr_principal: [],
+      });
+      console.log("liveUser", liveUser);
+    } catch (e: any) {
+      alert(`Something went wrong: ${e?.message}`);
+      // return;
+    }
+    setLoading(false);
+    onClose();
+  };
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* Background Overlay */}
+      <div
+        className="fixed inset-0 z-40 bg-black bg-opacity-50"
+        onClick={() => setIsOpen(false)}
+      />
+
+      {/* Modal */}
+      <div className="fixed left-1/2 top-1/2 z-50 mx-4 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 transform rounded bg-white p-8 pb-6 shadow-xl">
+        <p className=" text-center text-lg font-semibold xl:text-xl">
+          Link OpenChat
+        </p>
+        <p className="mb-6 mt-1 text-center text-xs text-gray-500">
+          {"Link your OpenChat Account."}
+        </p>
+        <div className="mx-auto my-5 w-full  border-t-[0.5px]"></div>
+        <Input
+          containerClass="w-full"
+          className="text-ellipsis text-sm"
+          placeholder={"Your OpenChat account UserID"}
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+        />
+        <div className="flex w-full flex-row justify-center">
+          <Button
+            className="mt-6"
+            variant="dark"
+            onClick={submitUser}
+            disabled={loading}
+          >
+            Submit
+          </Button>
+        </div>
+
+        <X
+          size={22}
+          className="absolute right-0 top-0 m-4 cursor-pointer"
+          onClick={() => setIsOpen(false)}
+        />
+      </div>
+    </>
+  );
+};

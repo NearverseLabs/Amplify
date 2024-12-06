@@ -10,7 +10,10 @@ import {
   useIcpConnection,
 } from "@/hooks/useCanisters.ts";
 import { useUserContext } from "@/providers/UserProvider.tsx";
-import { _SERVICE } from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
+import {
+  _SERVICE,
+  Principal,
+} from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
 import * as React from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -49,11 +52,22 @@ const Login = () => {
           alert(`Error from ${activeProvider.meta.name}: ${e}`);
           return;
         }
-          if (principal.toText()) {
-            navigate("/profile");
-          } else {
-            return;
-          }
+        try {
+          await backend.register_user({
+            id: principal,
+            name: principal.toString(),
+            openchat_principal: [],
+            taggr_principal: [],
+          });
+        } catch (e) {
+          // alert(`Error from ${activeProvider.meta.name}: ${e}`);
+          // return;
+        }
+        if (principal.toText()) {
+          navigate("/profile");
+        } else {
+          return;
+        }
       };
       fetchUser().finally(() => setIsLoading(false));
     } else {

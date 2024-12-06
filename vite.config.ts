@@ -20,7 +20,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
       "/backend": {
-        target: "https://backend.amplify-icp.com",
+        target: "https://app.148.135.136.49.nip.io",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/backend/, "/"),
       },
@@ -35,7 +35,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
       "/backend": {
-        target: "https://backend.amplify-icp.com",
+        target: "https://app.148.135.136.49.nip.io",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/backend/, "/"),
       },

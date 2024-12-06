@@ -76,6 +76,7 @@ const Home = () => {
 
   const queryParams = useMemo(() => {
     const obj: any = {};
+    obj.user_id = principal?.toString() || "";
     if (searchString) {
       obj.name = searchString;
     }
@@ -85,7 +86,7 @@ const Home = () => {
     if (selectedOption === "In-Progress") obj.ongoing = true;
     if (selectedOption === "Claimed") obj.claimed = true;
     if (selectedOption === "Unclaimed") obj.unclaimed = true;
-    obj.ready = selectedOption !== "Pending";
+    // obj.ready = selectedOption !== "Pending";
     if (selectedOption === "Pending") obj.my = true;
     obj.page = pageNumber;
     return new URLSearchParams(obj).toString();

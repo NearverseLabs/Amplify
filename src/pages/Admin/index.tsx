@@ -137,7 +137,7 @@ const Admin = () => {
       if (minRewardPrincipal && minReward) {
         const response = await backend.whitelist_token(
           Principal.fromText(minRewardPrincipal),
-          BigInt(minReward),
+          BigInt(Number(minReward) * 10 ** 8),
           selectedToken.symbol,
         );
         console.log(response, "updated min reward");

@@ -7,7 +7,10 @@ import AuthLayout from "@/components/AuthLayout";
 import { idlFactory } from "../../declarations/icrc1_ledger_canister";
 import { idlFactory as icpIdlFactory } from "../../declarations/icp_ledger_canister";
 import React, { useEffect, useMemo, useState } from "react";
-import { WhiteListedToken } from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
+import {
+  Users,
+  WhiteListedToken,
+} from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
 import { useBackend, useIcpConnection } from "@/hooks/useCanisters.ts";
 import { _SERVICE } from "@/declarations/icrc1_ledger_canister/icrc1_ledger_canister.did";
 import { _SERVICE as ICP_SERVICE } from "@/declarations/icp_ledger_canister/icp_ledger_canister.did";
@@ -16,7 +19,7 @@ import {
   useWhiteListedContext,
 } from "@/providers/WhiteListedTokensProvider.tsx";
 import Button from "@/components/buttons/Button";
-import DepositModal from "@/components/DepositModal";
+import DepositModal, { OpenChattModal } from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 import { RewardToken } from "@/hooks/useRewardToken";
 import { toast } from "react-toastify";
@@ -96,6 +99,25 @@ export default function Profile() {
     });
 
   const [isLoading, setLoading] = React.useState(false);
+  const [isOpenChatModalOpen, setIsOpenChatModalOpen] = useState(false);
+  const [live_user, setLiveUser] = React.useState<Users | undefined>(undefined);
+  const [backend] = useBackend();
+
+  const fetchUser = async () => {
+    if (!principal) return;
+    try {
+      const liveUser = await backend.get_user(principal);
+      if ("Ok" in liveUser) {
+        setLiveUser(liveUser.Ok);
+      }
+    } catch (e) {
+      // alert(`Error from ${activeProvider.meta.name}: ${e}`);
+      // return;
+    }
+  };
+  useEffect(() => {
+    fetchUser();
+  }, [principal]);
 
   const { user, randomAvatar } = useUserContext();
 
@@ -148,30 +170,35 @@ export default function Profile() {
             <div className="flex items-center justify-between py-3">
               <p
                 onClick={() => {
-                  if (principal) {
+                  if ((live_user?.openchat_principal.length || 0) > 0) {
                     window?.navigator?.clipboard?.writeText(
-                      principal?.toString(),
+                      live_user?.taggr_principal?.[0]?.toString() || "",
                     );
                     toast.info("Copied!");
                   }
                 }}
                 className="cursor-pointer text-lg font-semibold min-[2560px]:text-4xl"
               >
-                {principal ? (
+                {(live_user?.taggr_principal.length || 0) > 0 ? (
                   <span className="flex items-center">
-                    {walletNameTrimmer(principal.toString(), 10, 8)}{" "}
+                    {walletNameTrimmer(
+                      live_user?.taggr_principal?.[0]?.toString(),
+                      10,
+                      8,
+                    )}{" "}
                     <Copy className="ml-1" />
                   </span>
                 ) : (
                   "-"
                 )}
               </p>
-              <a
-                className="text-lg font-normal underline min-[2560px]:text-4xl"
-                href={`#`}
+              <button
+                className="cursor-pointer text-lg font-normal underline min-[2560px]:text-4xl"
+                disabled={true}
+                onClick={() => setIsOpenChatModalOpen(true)}
               >
                 Link
-              </a>
+              </button>
             </div>
           </div>
           <div className="mb-4 rounded-md border border-[#e6e6e6] bg-[#f3f3f3] p-4 min-[2560px]:mb-6 min-[2560px]:p-8">
@@ -181,30 +208,37 @@ export default function Profile() {
             <div className="flex items-center justify-between py-3">
               <p
                 onClick={() => {
-                  if (principal) {
+                  if ((live_user?.openchat_principal.length || 0) > 0) {
                     window?.navigator?.clipboard?.writeText(
-                      principal?.toString(),
+                      live_user?.openchat_principal?.[0]?.toString() || "",
                     );
                     toast.info("Copied!");
                   }
                 }}
                 className="cursor-pointer text-lg font-semibold min-[2560px]:text-4xl"
               >
-                {principal ? (
+                {(live_user?.openchat_principal?.length || 0) > 0 ? (
                   <span className="flex items-center">
-                    {walletNameTrimmer(principal.toString(), 10, 8)}{" "}
+                    {walletNameTrimmer(
+                      live_user?.openchat_principal?.[0]?.toString(),
+                      10,
+                      8,
+                    )}{" "}
                     <Copy className="ml-1" />
                   </span>
                 ) : (
                   "-"
                 )}
               </p>
-              <a
-                className="text-lg font-normal underline min-[2560px]:text-4xl"
-                href={`#`}
+              <button
+                className="cursor-pointer text-lg font-normal underline min-[2560px]:text-4xl"
+                onClick={() => setIsOpenChatModalOpen(true)}
+                disabled={(live_user?.openchat_principal?.length || 0) > 0}
               >
-                Link
-              </a>
+                {(live_user?.openchat_principal?.length || 0) > 0
+                  ? "Linked"
+                  : "Link"}
+              </button>
             </div>
           </div>
           <div className="mb-4 rounded-md border border-[#e6e6e6] bg-[#f3f3f3] p-4 min-[2560px]:mb-6 min-[2560px]:p-8">
@@ -307,6 +341,15 @@ export default function Profile() {
                 <Loader2 className="animate-spin" />
               </div>
             )}
+            <OpenChattModal
+              isOpen={isOpenChatModalOpen}
+              setIsOpen={setIsOpenChatModalOpen}
+              onClose={() => {
+                fetchUser();
+                setIsOpenChatModalOpen(false);
+              }}
+              token={""}
+            />
           </div>
         </div>
       </main>

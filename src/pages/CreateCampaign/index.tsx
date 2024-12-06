@@ -33,15 +33,33 @@ import { createAgent as createIcpAgent } from "@dfinity/utils";
 import { useWhiteListedContext } from "@/providers/WhiteListedTokensProvider.tsx";
 import { RewardToken } from "@/hooks/useRewardToken.ts";
 import { convertXToTwitter } from "@/lib/utils";
-import { CreateCampaignInput } from "@/hooks/useCampaignsReducer.ts";
+import {
+  CreateCampaignInput,
+  Requirements,
+} from "@/hooks/useCampaignsReducer.ts";
 import axios from "axios";
 import Dropdown from "@/components/Dropdown";
 
 const initialValues = {
+  // project_name: "",
+  // tweet_link: "",
+  // reward: "",
+  // winners: "",
+  // start_time: "",
+  // end_time: "",
+
   project_name: "",
-  tweet_link: "",
-  reward: "",
+  platform: "",
+  // tweet_id: "",
   winners: "",
+  reward_token: "",
+  reward: "",
+  messages_in_community: "",
+  messages_in_group: "",
+  active_in_community_time: "",
+  active_in_group_time: "",
+  join_group: "",
+  join_community: "",
   start_time: "",
   end_time: "",
 };
@@ -64,8 +82,8 @@ const twitterRequirements: IRequirement[] = [
 const openChatRequirements: IRequirement[] = [
   { type: "join_group", title: "Join Group" },
   { type: "join_community", title: "Join Community" },
-  { type: "active_in_group", title: "Active in Group" },
-  { type: "active_in_community", title: "Active in Community" },
+  { type: "active_in_group_time", title: "Active in Group" },
+  { type: "active_in_community_time", title: "Active in Community" },
 ];
 const taggrRequirements: IRequirement[] = [
   { type: "follow", title: "Follow" },
@@ -80,12 +98,42 @@ const timeframeOptions = [
   { value: "72h", label: "72 Hours" },
   { value: "1w", label: "1 Week" },
 ];
+
 const platformPatterns = {
   twitter:
     /^(https:\/\/(?:www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+)(\?s=\d+)?$/,
   openchat: /^https:\/\/oc\.app\/community\/[a-zA-Z0-9-]+$/,
   taggr: /^https:\/\/taggr\.network\/[a-zA-Z0-9-]+$/,
 };
+
+function convertToSeconds(timeStr: string) {
+  if (!timeStr) return 0;
+  const timeUnits = {
+    h: 3600, // 1 hour = 3600 seconds
+    d: 86400, // 1 day = 86400 seconds
+    w: 604800, // 1 week = 604800 seconds
+  };
+
+  const match = timeStr.match(/^(\d+)([hdw])$/);
+  if (!match) {
+    return 0;
+    // throw new Error("Invalid time format. Use formats like '24h', '1w', etc.");
+  }
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2] as "h" | "d" | "w";
+
+  return value * timeUnits[unit];
+}
+
+function extractGroupId(url: string) {
+  const match = url.match(/group\/([a-z0-9-]+)/);
+  return match ? match[1] : null;
+}
+function extractCommunityAndChannelIds(url: string): string[] | null {
+  const match = url.match(/community\/([a-z0-9-]+)\/channel\/([0-9]+)/);
+  return match ? [match[1], match[2]] : null;
+}
 
 const CreateCampaign = () => {
   const [selectedPlatform, setSelectedPlatform] = useState(platforms[0]);
@@ -100,10 +148,6 @@ const CreateCampaign = () => {
   const [settings, setSettings] = useState<Settings>();
   const [fetchTokenListLoading, setFetchTokenListLoading] =
     useState<boolean>(false);
-  const [groupInviteLink, setGroupInviteLink] = useState("");
-  const [communityInviteLink, setCommunityInviteLink] = useState("");
-  const [timeframe, setTimeframe] = useState("24h");
-  const [messageCount, setMessageCount] = useState("");
 
   console.log("resolved tokens", tokens, tokenSelected);
   const selectedToken = useMemo(() => {
@@ -129,26 +173,28 @@ const CreateCampaign = () => {
       case "Taggr":
         return taggrRequirements;
       default:
-        return twitterRequirements;
+        return openChatRequirements;
     }
   }, [selectedPlatform]);
 
   const formValidation = useMemo(() => {
     let validationSchema = Yup.object().shape({
       project_name: Yup.string().required("Name required*"),
-      tweet_link: Yup.string()
-        .required("Link required*")
-        .matches(
-          platformPatterns[selectedPlatform as keyof typeof platformPatterns],
-          `Invalid ${selectedPlatform} link`,
-        ),
+      // tweet_link: Yup.string()
+      //   .required("Link required*")
+      //   .matches(
+      //     platformPatterns[selectedPlatform as keyof typeof platformPatterns],
+      //     `Invalid ${selectedPlatform} link`,
+      //   ),
       reward: Yup.number()
         .moreThan(0, "Value must be greater than 0")
         .required("Reward required*")
         .min(
-          (selectedToken && Number(selectedToken?.min_reward)) ?? 0,
+          (selectedToken &&
+            Number((Number(selectedToken?.min_reward) ?? 0) / 10 ** 8)) ??
+            0,
           `Reward amount should be more than ${
-            Number(selectedToken?.min_reward) ?? 0
+            (Number(selectedToken?.min_reward) ?? 0) / 10 ** 8
           }`,
         ),
       start_time: Yup.date()
@@ -193,7 +239,7 @@ const CreateCampaign = () => {
     onSubmit: (values: ICreateFormData) => createCampaignHandler(values),
   });
 
-  const { values, errors, handleChange } = formik;
+  const { values, errors, handleChange, setFieldValue } = formik;
 
   const [tokenCanister] = useToken(selectedToken?.token?.toString());
 
@@ -220,10 +266,19 @@ const CreateCampaign = () => {
 
   const requirementObject = React.useMemo(() => {
     const obj: MyObject = {
+      messages_in_group: false,
+      repost: false,
+      active_in_group_time: false,
+      like: false,
+      active_in_community_time: false,
+      comment: false,
+      join_community: false,
+      messages_in_community: false,
       follow: false,
+      join_group: false,
     };
     currentRequirementList.forEach((require: IRequirement) => {
-      if (requirements.includes(require)) {
+      if (requirements.map((r) => r.type).includes(require.type)) {
         obj[require.type] = true;
       } else {
         obj[require.type] = false;
@@ -261,6 +316,7 @@ const CreateCampaign = () => {
     }
   }, [selectedToken, settings, values.reward, values.winners]);
   const createCampaignHandler = async (values: ICreateFormData) => {
+    console.log("values", values);
     if (isConnected && principal) {
       if (requirements.length > 0) {
         if (selectedToken && tokenCanister && platformfee && platformfee[1]) {
@@ -286,10 +342,22 @@ const CreateCampaign = () => {
               tokenFee +
               BigInt(Number(tokenFee) * Number(values.winners));
             const data: CreateCampaignInput = {
+              active_in_community_time: convertToSeconds(
+                values.active_in_community_time,
+              ),
+              active_in_group_time: convertToSeconds(
+                values.active_in_group_time,
+              ),
+              join_community: extractCommunityAndChannelIds(
+                values.join_community,
+              )?.join(":"),
+              join_group: extractGroupId(values.join_group),
+              messages_in_community: Number(values.messages_in_community || 0),
+              messages_in_group: Number(values.messages_in_group || 0),
               reward: BigInt(
                 Number(values.reward) * 10 ** selectedToken.decimal,
               ).toString(),
-              tweet_id: values.tweet_link,
+              // tweet_id: values.tweet_link,
               startsAt: BigInt(
                 moment(values.start_time).unix() * 10 ** 9,
               ).toString(),
@@ -300,7 +368,10 @@ const CreateCampaign = () => {
               project_name: values.project_name,
               winners: BigInt(values.winners).toString(),
               requirements: requirementObject,
+              platform: selectedPlatform,
+              user_id: principal.toString(),
             };
+            console.log("data", data);
             setIsLoading(true);
             const create = async (additional = 0n) => {
               const isTransferICP = await transferICPFun({
@@ -452,8 +523,9 @@ const CreateCampaign = () => {
             </div>
             <Input
               placeholder="Enter group invite link"
-              value={groupInviteLink}
-              onChange={(e) => setGroupInviteLink(e.target.value)}
+              value={values.join_group}
+              name={"join_group"}
+              onChange={handleChange}
               containerClass="w-full md:w-2/5"
             />
           </div>
@@ -473,15 +545,17 @@ const CreateCampaign = () => {
 
             <Input
               placeholder="Enter community invite link"
-              value={communityInviteLink}
-              onChange={(e) => setCommunityInviteLink(e.target.value)}
+              value={values.join_community}
+              name={"join_community"}
+              onChange={handleChange}
+              // onChange={(e) => setCommunityInviteLink(e.target.value)}
               containerClass="w-full md:w-2/5"
             />
           </div>
         );
 
-      case "active_in_group":
-      case "active_in_community":
+      case "active_in_group_time":
+      case "active_in_community_time":
         return (
           <div key={index} className=" my-4 mb-6 ">
             <h4 className="mb-2 font-semibold min-[2560px]:text-2xl">
@@ -496,8 +570,17 @@ const CreateCampaign = () => {
                   variant="secondary"
                   className="w-full md:w-2/5"
                   dropdownList={timeframeOptions.map((opt) => opt.label)}
-                  selectedOption={timeframe}
-                  setSelectedOption={(value) => setTimeframe(value)}
+                  selectedOption={
+                    requirement.type === "active_in_community_time"
+                      ? values.active_in_community_time
+                      : values.active_in_group_time
+                  }
+                  setSelectedOption={(value) =>
+                    setFieldValue(
+                      requirement.type,
+                      timeframeOptions.find((t) => t.label === value)?.value,
+                    )
+                  }
                 />
               </div>
               <div className="md:flex md:items-center md:gap-4">
@@ -507,8 +590,19 @@ const CreateCampaign = () => {
                 <Input
                   type="number"
                   placeholder="Enter number of messages"
-                  value={messageCount}
-                  onChange={(e) => setMessageCount(e.target.value)}
+                  value={
+                    requirement.type === "active_in_community_time"
+                      ? values.messages_in_community
+                      : values.messages_in_group
+                  }
+                  onChange={(e) =>
+                    setFieldValue(
+                      requirement.type === "active_in_community_time"
+                        ? "messages_in_community"
+                        : "messages_in_group",
+                      e.target.value,
+                    )
+                  }
                   containerClass="w-full md:w-2/5"
                 />
               </div>
@@ -585,28 +679,28 @@ const CreateCampaign = () => {
               error={errors.project_name}
             />
           </div>
-          <div className="mb-6 items-center gap-4 md:flex min-[2560px]:mb-10">
-            <div className="w-full md:w-1/5">
-              <h3 className="mb-2 text-base font-semibold min-[2560px]:text-4xl">
-                {`${selectedPlatform} Link*`}
-              </h3>
-              <p className="text-sm font-normal text-[#595959] min-[2560px]:text-2xl">
-                Paste the whole link
-              </p>
-            </div>
-            <Input
-              name="tweet_link"
-              value={values.tweet_link}
-              onChange={handleChange}
-              placeholder={
-                selectedPlatform === "Openchat"
-                  ? "https://oc.app/community/example"
-                  : "https://taggr.network/example"
-              }
-              containerClass="w-full md:w-2/5"
-              error={errors.tweet_link}
-            />
-          </div>
+          {/*<div className="mb-6 items-center gap-4 md:flex min-[2560px]:mb-10">*/}
+          {/*  <div className="w-full md:w-1/5">*/}
+          {/*    <h3 className="mb-2 text-base font-semibold min-[2560px]:text-4xl">*/}
+          {/*      {`${selectedPlatform} Link*`}*/}
+          {/*    </h3>*/}
+          {/*    <p className="text-sm font-normal text-[#595959] min-[2560px]:text-2xl">*/}
+          {/*      Paste the whole link*/}
+          {/*    </p>*/}
+          {/*  </div>*/}
+          {/*  <Input*/}
+          {/*    name="tweet_link"*/}
+          {/*    value={values.tweet_link}*/}
+          {/*    onChange={handleChange}*/}
+          {/*    placeholder={*/}
+          {/*      selectedPlatform === "Openchat"*/}
+          {/*        ? "https://oc.app/community/example"*/}
+          {/*        : "https://taggr.network/example"*/}
+          {/*    }*/}
+          {/*    containerClass="w-full md:w-2/5"*/}
+          {/*    error={errors.tweet_link}*/}
+          {/*  />*/}
+          {/*</div>*/}
           <div className="mb-6 items-center gap-4 md:flex min-[2560px]:mb-10">
             <div className="w-full md:w-1/5">
               <h3 className="mb-2 text-base font-semibold min-[2560px]:text-4xl">
@@ -861,25 +955,25 @@ const CreateCampaign = () => {
           )}
           <div className="mb-3 mt-6 font-semibold">{values.project_name}</div>
           {/* TODO: modify it for tagger and openchat */}
-          {values.tweet_link &&
-            platformPatterns["twitter"].test(values.tweet_link) && (
-              <div className="w-full md:w-[550px]">
-                <iframe
-                  height="400"
-                  width="100%"
-                  src={`https://twitframe.com/show?url=${convertXToTwitter(
-                    values.tweet_link,
-                  )}`}
-                ></iframe>
-              </div>
-            )}
+          {/*{values.tweet_link &&*/}
+          {/*  platformPatterns["twitter"].test(values.tweet_link) && (*/}
+          {/*    <div className="w-full md:w-[550px]">*/}
+          {/*      <iframe*/}
+          {/*        height="400"*/}
+          {/*        width="100%"*/}
+          {/*        src={`https://twitframe.com/show?url=${convertXToTwitter(*/}
+          {/*          values.tweet_link,*/}
+          {/*        )}`}*/}
+          {/*      ></iframe>*/}
+          {/*    </div>*/}
+          {/*  )}*/}
           <div>
             <Button
               type="submit"
               variant="dark"
               className="mt-6 gap-2 rounded bg-black px-3 py-2 text-sm text-white min-[2560px]:rounded-xl min-[2560px]:p-8 min-[2560px]:text-4xl"
-              // onClick={() => formik.handleSubmit()} //TODO: enable it after tagger and openchat campaign is available
-              // isLoading={isLoading}
+              onClick={() => formik.handleSubmit()}
+              isLoading={isLoading}
             >
               Submit
             </Button>
