@@ -1,0 +1,12 @@
+import type { ApiApproveIdentityLinkResponse, ApiAuthPrincipalsResponse, ApiCheckAuthPrincipalResponse, ApiCreateIdentityResponse, ApiGenerateChallengeResponse, ApiGetDelegationResponse, ApiInitiateIdentityLinkResponse, ApiPrepareDelegationResponse } from "./candid/idl";
+import { type ApproveIdentityLinkResponse, type AuthenticationPrincipalsResponse, type CheckAuthPrincipalResponse, type CreateIdentityResponse, type GenerateChallengeResponse, type GetDelegationResponse, type InitiateIdentityLinkResponse, type PrepareDelegationResponse } from "openchat-shared";
+import type { SignedDelegation } from "./candid/types";
+export declare function createIdentityResponse(candid: ApiCreateIdentityResponse): CreateIdentityResponse;
+export declare function checkAuthPrincipalResponse(candid: ApiCheckAuthPrincipalResponse): CheckAuthPrincipalResponse;
+export declare function prepareDelegationResponse(candid: ApiPrepareDelegationResponse): PrepareDelegationResponse;
+export declare function getDelegationResponse(candid: ApiGetDelegationResponse): GetDelegationResponse;
+export declare function signedDelegation(signedDelegation: SignedDelegation): GetDelegationResponse;
+export declare function generateChallengeResponse(candid: ApiGenerateChallengeResponse): GenerateChallengeResponse;
+export declare function initiateIdentityLinkResponse(candid: ApiInitiateIdentityLinkResponse): InitiateIdentityLinkResponse;
+export declare function authPrincipalsResponse(candid: ApiAuthPrincipalsResponse): AuthenticationPrincipalsResponse;
+export declare function approveIdentityLinkResponse(candid: ApiApproveIdentityLinkResponse): ApproveIdentityLinkResponse;

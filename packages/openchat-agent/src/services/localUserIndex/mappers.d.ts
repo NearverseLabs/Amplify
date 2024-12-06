@@ -1,0 +1,14 @@
+import { Principal } from "@dfinity/principal";
+import type { AccessTokenType, ChatEventsArgs, ChatEventsBatchResponse, GroupAndCommunitySummaryUpdatesResponse, JoinCommunityResponse, JoinGroupResponse, RegisterUserResponse, VerifiedCredentialArgs, VideoCallType } from "openchat-shared";
+import type { AccessTokenType as TAccessTokenType, LocalUserIndexAccessTokenResponse, LocalUserIndexChatEventsEventsArgs, LocalUserIndexChatEventsResponse, LocalUserIndexGroupAndCommunitySummaryUpdatesResponse, LocalUserIndexInviteUsersToChannelResponse, LocalUserIndexInviteUsersToCommunityResponse, LocalUserIndexInviteUsersToGroupResponse, LocalUserIndexJoinChannelResponse, LocalUserIndexJoinCommunityResponse, LocalUserIndexRegisterUserResponse, VerifiedCredentialGateArgs as TVerifiedCredentialGateArgs, VideoCallType as TVideoCallType } from "../../typebox";
+export declare function apiAccessTokenType(domain: AccessTokenType): TAccessTokenType;
+export declare function apiCallType(domain: VideoCallType): TVideoCallType;
+export declare function accessTokenResponse(value: LocalUserIndexAccessTokenResponse): string | undefined;
+export declare function groupAndCommunitySummaryUpdates(value: LocalUserIndexGroupAndCommunitySummaryUpdatesResponse): GroupAndCommunitySummaryUpdatesResponse[];
+export declare function chatEventsArgs(eventArgs: ChatEventsArgs): LocalUserIndexChatEventsEventsArgs;
+export declare function chatEventsBatchResponse(principal: Principal, requests: ChatEventsArgs[], value: LocalUserIndexChatEventsResponse): Promise<ChatEventsBatchResponse>;
+export declare function joinChannelResponse(value: LocalUserIndexJoinChannelResponse, communityId: string): JoinGroupResponse;
+export declare function registerUserResponse(value: LocalUserIndexRegisterUserResponse): RegisterUserResponse;
+export declare function inviteUsersResponse(value: LocalUserIndexInviteUsersToGroupResponse | LocalUserIndexInviteUsersToChannelResponse | LocalUserIndexInviteUsersToCommunityResponse): boolean;
+export declare function joinCommunityResponse(value: LocalUserIndexJoinCommunityResponse): JoinCommunityResponse;
+export declare function apiVerifiedCredentialArgs(domain: VerifiedCredentialArgs): TVerifiedCredentialGateArgs;

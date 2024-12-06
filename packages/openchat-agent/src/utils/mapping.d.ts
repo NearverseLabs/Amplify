@@ -1,0 +1,18 @@
+import { type ApiOptionUpdate, type ApiOptionUpdateV2, type OptionUpdate } from "openchat-shared";
+export declare function optional<A, B>(candid: [] | [A], mapper: (a: A) => B): B | undefined;
+export declare function mapOptional<A, B>(input: A | null | undefined, mapper: (a: A) => B): B | undefined;
+export declare function optionUpdate<A, B>(candid: ApiOptionUpdate<A>, mapper: (a: A) => B): OptionUpdate<B>;
+export declare function optionUpdateV2<A, B>(value: ApiOptionUpdateV2<A>, mapper: (a: A) => B): OptionUpdate<B>;
+export declare function apiOptionUpdate<A, B>(mapper: (a: A) => B, domain: OptionUpdate<A>): ApiOptionUpdate<B>;
+export declare function apiOptionUpdateV2<A, B>(mapper: (a: A) => B, domain: OptionUpdate<A>): ApiOptionUpdateV2<B>;
+export declare function identity<T>(x: T): T;
+export declare function toVoid(_x: unknown): void;
+export declare function hexStringToBytes(hex: string): Uint8Array;
+export declare function consolidateBytes(bytes: Uint8Array | number[]): Uint8Array;
+export declare function bytesToHexString(bytes: Uint8Array | number[]): string;
+export declare function principalBytesToString(bytes: Uint8Array): string;
+export declare function principalStringToBytes(principal: string): Uint8Array;
+export declare function maybePrincipalStringToBytes(principal?: string): Uint8Array | undefined;
+export declare function bigintToBytes(value: bigint): Uint8Array;
+export declare function bytesToBigint(bytes: Uint8Array | number[]): bigint;
+export declare function durationToTimestamp(duration: bigint): bigint;

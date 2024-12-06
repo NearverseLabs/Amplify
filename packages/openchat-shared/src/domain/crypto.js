@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DEFAULT_TOKENS = exports.LEDGER_CANISTER_CHAT = exports.LEDGER_CANISTER_ICP = exports.GHOST_SYMBOL = exports.HOTORNOT_SYMBOL = exports.KINIC_SYMBOL = exports.SNS1_SYMBOL = exports.CKBTC_SYMBOL = exports.ICP_SYMBOL = exports.CHAT_SYMBOL = exports.E8S_PER_TOKEN = void 0;
+exports.E8S_PER_TOKEN = 100000000;
+exports.CHAT_SYMBOL = "CHAT";
+exports.ICP_SYMBOL = "ICP";
+exports.CKBTC_SYMBOL = "ckBTC";
+exports.SNS1_SYMBOL = "SNS1";
+exports.KINIC_SYMBOL = "KINIC";
+exports.HOTORNOT_SYMBOL = "HOT";
+exports.GHOST_SYMBOL = "GHOST";
+exports.LEDGER_CANISTER_ICP = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+exports.LEDGER_CANISTER_CHAT = "2ouva-viaaa-aaaaq-aaamq-cai";
+exports.DEFAULT_TOKENS = ["CHAT", "ICP", "ckUSDC", "ckBTC", "ckETH"];

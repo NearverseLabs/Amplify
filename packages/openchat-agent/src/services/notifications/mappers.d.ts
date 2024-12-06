@@ -1,0 +1,10 @@
+import type { SubscriptionExistsResponse, ToggleMuteNotificationResponse, Notification, AddedToChannelNotification, ChannelNotification, GroupNotification, DirectNotification } from "openchat-shared";
+import type { ApiNotification, ApiAddedToChannelNotification, ApiChannelMessageNotification, ApiGroupMessageNotification, ApiDirectMessageNotification } from "./candid/idl";
+import type { CommunityToggleMuteNotificationsResponse, GroupToggleMuteNotificationsResponse, NotificationsIndexSubscriptionExistsResponse, UserMuteNotificationsResponse } from "../../typebox";
+export declare function toggleNotificationsResponse(value: UserMuteNotificationsResponse | GroupToggleMuteNotificationsResponse | CommunityToggleMuteNotificationsResponse): ToggleMuteNotificationResponse;
+export declare function subscriptionExistsResponse(value: NotificationsIndexSubscriptionExistsResponse): SubscriptionExistsResponse;
+export declare function notification(candid: ApiNotification, timestamp: bigint): Notification;
+export declare function addedToChannelNotification(candid: ApiAddedToChannelNotification, timestamp: bigint): AddedToChannelNotification;
+export declare function channelNotification(candid: ApiChannelMessageNotification, timestamp: bigint): ChannelNotification;
+export declare function groupNotification(candid: ApiGroupMessageNotification, timestamp: bigint): GroupNotification;
+export declare function directNotification(candid: ApiDirectMessageNotification, timestamp: bigint): DirectNotification;

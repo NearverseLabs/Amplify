@@ -1,0 +1,5 @@
+{
+  "name": "openchat-shared",
+  "main": "src/index.js",
+  "version": "1.0.0"
+}

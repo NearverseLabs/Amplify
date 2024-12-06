@@ -1,0 +1,13 @@
+import type { ChatEvent, DirectChatSummary, DirectChatSummaryUpdates, EventWrapper, GroupChatDetails, GroupChatDetailsUpdates, GroupChatSummary, GroupCanisterGroupChatSummary, GroupCanisterGroupChatSummaryUpdates, UserCanisterGroupChatSummary, UserCanisterGroupChatSummaryUpdates, UpdatedEvent, Metrics, CommunityDetails, CommunityDetailsUpdates, CommunityCanisterCommunitySummaryUpdates, ChannelIdentifier } from "openchat-shared";
+import { ChatMap } from "openchat-shared";
+export declare function mergeCommunityDetails(previous: CommunityDetails, updates: CommunityDetailsUpdates): CommunityDetails;
+export declare function mergeGroupChatDetails(previous: GroupChatDetails, updates: GroupChatDetailsUpdates): GroupChatDetails;
+export declare function mergeDirectChatUpdates(directChats: DirectChatSummary[], updates: DirectChatSummaryUpdates[]): DirectChatSummary[];
+export declare function mergeGroupChatUpdates(groupChats: GroupChatSummary[], userCanisterUpdates: UserCanisterGroupChatSummaryUpdates[], groupCanisterUpdates: GroupCanisterGroupChatSummaryUpdates[]): GroupChatSummary[];
+export declare function mergeGroupChats(userCanisterGroups: UserCanisterGroupChatSummary[], groupCanisterGroups: GroupCanisterGroupChatSummary[]): GroupChatSummary[];
+export declare function getUpdatedEvents(directChats: DirectChatSummaryUpdates[], groupChats: GroupCanisterGroupChatSummaryUpdates[], communities: CommunityCanisterCommunitySummaryUpdates[]): ChatMap<UpdatedEvent[]>;
+export declare function buildBlobUrl(pattern: string, canisterId: string, blobId: bigint, blobType: "blobs" | "avatar" | "banner", channelId?: ChannelIdentifier): string;
+export declare function buildTokenLogoUrl(pattern: string, canisterId: string, ledger: string, logoId: bigint): string;
+export declare function buildUserAvatarUrl(pattern: string, userId: string, avatarId?: bigint): string;
+export declare function emptyChatMetrics(): Metrics;
+export declare function nextIndex(ascending: boolean, events: EventWrapper<ChatEvent>[]): number | undefined;

@@ -1,0 +1,30 @@
+import type { HttpAgent, Identity } from "@dfinity/agent";
+import type { CheckUsernameResponse, CurrentUserResponse, SetUsernameResponse, UsersArgs, UsersResponse, UserSummary, SuspendUserResponse, UnsuspendUserResponse, DiamondMembershipDuration, PayForDiamondMembershipResponse, SetUserUpgradeConcurrencyResponse, SetDisplayNameResponse, DiamondMembershipFees, ChitState, SubmitProofOfUniquePersonhoodResponse, ChitLeaderboardResponse, ExternalAchievementsResponse } from "openchat-shared";
+import { Stream } from "openchat-shared";
+import { CandidService } from "../candidService";
+export declare class UserIndexClient extends CandidService {
+    constructor(identity: Identity, agent: HttpAgent, canisterId: string);
+    getCurrentUser(): Stream<CurrentUserResponse>;
+    setModerationFlags(flags: number): Promise<boolean>;
+    userRegistrationCanister(): Promise<string>;
+    searchUsers(searchTerm: string, maxResults?: number): Promise<UserSummary[]>;
+    getUsers(chitState: ChitState, users: UsersArgs, allowStale: boolean): Promise<UsersResponse>;
+    private getUsersFromBackend;
+    private buildGetUsersArgs;
+    private mergeGetUsersResponse;
+    checkUsername(username: string): Promise<CheckUsernameResponse>;
+    setUsername(userId: string, username: string): Promise<SetUsernameResponse>;
+    setDisplayName(userId: string, displayName: string | undefined): Promise<SetDisplayNameResponse>;
+    suspendUser(userId: string, reason: string): Promise<SuspendUserResponse>;
+    unsuspendUser(userId: string): Promise<UnsuspendUserResponse>;
+    payForDiamondMembership(userId: string, token: string, duration: DiamondMembershipDuration, recurring: boolean, expectedPriceE8s: bigint): Promise<PayForDiamondMembershipResponse>;
+    setUserUpgradeConcurrency(value: number): Promise<SetUserUpgradeConcurrencyResponse>;
+    getPlatformModeratorGroup(): Promise<string>;
+    diamondMembershipFees(): Promise<DiamondMembershipFees[]>;
+    setDiamondMembershipFees(fees: DiamondMembershipFees[]): Promise<boolean>;
+    reportedMessages(userId: string | undefined): Promise<string>;
+    chitLeaderboard(): Promise<ChitLeaderboardResponse>;
+    submitProofOfUniquePersonhood(iiPrincipal: string, credential: string): Promise<SubmitProofOfUniquePersonhoodResponse>;
+    getExternalAchievements(updatesSince: bigint): Promise<ExternalAchievementsResponse>;
+    deleteUser(userId: string): Promise<boolean>;
+}

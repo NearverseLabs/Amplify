@@ -1,0 +1,3 @@
+import { type ChatEvent, type EventsResponse, type IndexRange } from "openchat-shared";
+export declare function chunkedChatEventsFromBackend(eventsFn: (index: number, chunkSize: number) => Promise<EventsResponse<ChatEvent>>, [minIndex, maxIndex]: IndexRange, startIndex: number, ascending: boolean): Promise<EventsResponse<ChatEvent>>;
+export declare function chunkedChatEventsWindowFromBackend(eventsFn: (index: number, ascending: boolean, chunkSize: number) => Promise<EventsResponse<ChatEvent>>, eventsWindowFn: (index: number, chunkSize: number) => Promise<EventsResponse<ChatEvent>>, [minIndex, maxIndex]: IndexRange, messageIndex: number): Promise<EventsResponse<ChatEvent>>;

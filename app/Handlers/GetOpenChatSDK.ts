@@ -1,0 +1,171 @@
+import { OpenChatAgent } from 'openchat-agent'
+import { AnonymousIdentity } from '@dfinity/agent/lib/cjs/auth'
+import { alice } from 'App/Handlers/Actor'
+import { AuthProvider } from 'openchat-shared'
+
+const canisters = {
+  __Candid_UI: {
+    ic: '6hsbt-vqaaa-aaaaf-aaafq-cai',
+    ic_test: 'pfs7b-iqaaa-aaaaf-abs7q-cai',
+    web_test: 'xp7uu-xyaaa-aaaaf-aoa6a-cai',
+  },
+  airdrop_bot: {
+    ic: '62rh2-kiaaa-aaaaf-bmy5q-cai',
+    ic_test: '6pwwx-laaaa-aaaaf-bmy6a-cai',
+  },
+  cycles_dispenser: {
+    ic: 'gonut-hqaaa-aaaaf-aby7a-cai',
+    ic_test: 'mq2tp-baaaa-aaaaf-aucva-cai',
+  },
+  escrow: {
+    ic: 's4yi7-yiaaa-aaaar-qacpq-cai',
+    ic_test: 'tspqt-xaaaa-aaaal-qcnna-cai',
+  },
+  event_relay: {
+    ic: '6ofpc-2aaaa-aaaaf-biibq-cai',
+    ic_test: '6jejw-xyaaa-aaaaf-biiba-cai',
+  },
+  event_store: {
+    ic: '64dy3-wqaaa-aaaaf-biicq-cai',
+    ic_test: '63c6p-3iaaa-aaaaf-biica-cai',
+  },
+  group_index: {
+    ic: '4ijyc-kiaaa-aaaaf-aaaja-cai',
+    ic_test: '7kifq-3yaaa-aaaaf-ab2cq-cai',
+  },
+  identity: {
+    ic: '6klfq-niaaa-aaaar-qadbq-cai',
+    ic_test: 'rejcv-jqaaa-aaaak-afj5q-cai',
+  },
+  local_group_index: {
+    ic: 'suaf3-hqaaa-aaaaf-bfyoa-cai',
+    ic_test: 'sbhuw-gyaaa-aaaaf-bfynq-cai',
+  },
+  local_user_index: {
+    ic: 'nq4qv-wqaaa-aaaaf-bhdgq-cai',
+    ic_test: 'pecvb-tqaaa-aaaaf-bhdiq-cai',
+  },
+  market_maker: {
+    ic: 'r2pvs-tyaaa-aaaar-ajcwq-cai',
+    ic_test: '6qpog-pyaaa-aaaar-aikyq-cai',
+  },
+  neuron_controller: {
+    ic: 'tktqu-nyaaa-aaaar-qackq-cai',
+    ic_test: 'tdq3i-3qaaa-aaaar-qacla-cai',
+  },
+  notifications: {
+    ic: 'dobi3-tyaaa-aaaaf-adnna-cai',
+    ic_test: 'dhcdh-fqaaa-aaaaf-adnmq-cai',
+  },
+  notifications_index: {
+    ic: '4glvk-ryaaa-aaaaf-aaaia-cai',
+    ic_test: '7ekiy-aiaaa-aaaaf-ab2dq-cai',
+  },
+  online_users: {
+    ic: '3vlw6-fiaaa-aaaaf-aaa3a-cai',
+    ic_test: '7dlom-nqaaa-aaaaf-ab2da-cai',
+  },
+  proposal_validation: {
+    ic: 'wkype-7qaaa-aaaar-ajfyq-cai',
+  },
+  proposals_bot: {
+    ic: 'iywa7-ayaaa-aaaaf-aemga-cai',
+    ic_test: 'qu3kn-6qaaa-aaaaf-ahn7q-cai',
+  },
+  registry: {
+    ic: 'cpi5u-yiaaa-aaaar-aqw5a-cai',
+    ic_test: 'cglwi-oaaaa-aaaar-aqw4q-cai',
+  },
+  treasury: {
+    ic: 'nafek-diaaa-aaaar-qalxa-cai',
+  },
+  sign_in_with_email: {
+    ic: 'zi2i7-nqaaa-aaaar-qaemq-cai',
+    ic_test: 'rubs2-eaaaa-aaaaf-bijfq-cai',
+  },
+  sign_in_with_ethereum: {
+    ic: '2notu-qyaaa-aaaar-qaeha-cai',
+    ic_test: '4s357-zaaaa-aaaaf-bjz7q-cai',
+  },
+  sign_in_with_solana: {
+    ic: '2kpva-5aaaa-aaaar-qaehq-cai',
+    ic_test: 'lix6w-ciaaa-aaaaf-bj2aa-cai',
+  },
+  sns_governance: {
+    ic: '2jvtu-yqaaa-aaaaq-aaama-cai',
+    ic_test: 't5cdl-3iaaa-aaaak-qbumq-cai',
+  },
+  sns_index: {
+    ic: '2awyi-oyaaa-aaaaq-aaanq-cai',
+    ic_test: 'tubix-naaaa-aaaak-qbuna-cai',
+  },
+  sns_ledger: {
+    ic: '2ouva-viaaa-aaaaq-aaamq-cai',
+    ic_test: 'ttaod-ayaaa-aaaak-qbunq-cai',
+  },
+  sns_root: {
+    ic: '3e3x2-xyaaa-aaaaq-aaalq-cai',
+    ic_test: 'tgh7o-bqaaa-aaaak-qbuoa-cai',
+  },
+  sns_swap: {
+    ic: '2hx64-daaaa-aaaaq-aaana-cai',
+    ic_test: 'tbgz2-miaaa-aaaak-qbuoq-cai',
+  },
+  storage_index: {
+    ic: 'rturd-qaaaa-aaaaf-aabaq-cai',
+    ic_test: '6jemw-paaaa-aaaaf-ab2ea-cai',
+  },
+  translations: {
+    ic: 'lxq5i-mqaaa-aaaaf-bih7q-cai',
+    ic_test: 'lqr34-biaaa-aaaaf-bih7a-cai',
+  },
+  user_index: {
+    ic: '4bkt6-4aaaa-aaaaf-aaaiq-cai',
+    ic_test: '7njde-waaaa-aaaaf-ab2ca-cai',
+  },
+  website: {
+    ic: '6hsbt-vqaaa-aaaaf-aaafq-cai',
+    ic_test: 'pfs7b-iqaaa-aaaaf-abs7q-cai',
+    web_test: 'xp7uu-xyaaa-aaaaf-aoa6a-cai',
+  },
+}
+const dfxNetwork = 'ic'
+const TRANSLATIONS_CANISTER = canisters.translations[dfxNetwork]
+const USER_INDEX_CANISTER = canisters.user_index[dfxNetwork]
+const GROUP_INDEX_CANISTER = canisters.group_index[dfxNetwork]
+const NOTIFICATIONS_CANISTER = canisters.notifications_index[dfxNetwork]
+const IDENTITY_CANISTER = canisters.identity[dfxNetwork]
+const ONLINE_CANISTER = canisters.online_users[dfxNetwork]
+const PROPOSALS_BOT_CANISTER = canisters.proposals_bot[dfxNetwork]
+// const AIRDROP_BOT_CANISTER = canisters.airdrop_bot[dfxNetwork]
+const STORAGE_INDEX_CANISTER = canisters.storage_index[dfxNetwork]
+const REGISTRY_CANISTER = canisters.registry[dfxNetwork]
+const MARKET_MAKER_CANISTER = canisters.market_maker[dfxNetwork]
+const SIGN_IN_WITH_EMAIL_CANISTER = canisters.sign_in_with_email[dfxNetwork]
+const SIGN_IN_WITH_ETHEREUM_CANISTER = canisters.sign_in_with_ethereum[dfxNetwork]
+const SIGN_IN_WITH_SOLANA_CANISTER = canisters.sign_in_with_solana[dfxNetwork]
+
+export const openchatAgent = new OpenChatAgent(new AnonymousIdentity(), {
+  authPrincipal: alice.getPrincipal().toString(),
+  icUrl: 'https://icp-api.io',
+  openStorageIndexCanister: STORAGE_INDEX_CANISTER!,
+  groupIndexCanister: GROUP_INDEX_CANISTER!,
+  notificationsCanister: NOTIFICATIONS_CANISTER!,
+  identityCanister: IDENTITY_CANISTER!,
+  onlineCanister: ONLINE_CANISTER!,
+  userIndexCanister: USER_INDEX_CANISTER!,
+  translationsCanister: TRANSLATIONS_CANISTER!,
+  registryCanister: REGISTRY_CANISTER!,
+  proposalBotCanister: PROPOSALS_BOT_CANISTER!,
+  marketMakerCanister: MARKET_MAKER_CANISTER!,
+  signInWithEmailCanister: SIGN_IN_WITH_EMAIL_CANISTER!,
+  signInWithEthereumCanister: SIGN_IN_WITH_ETHEREUM_CANISTER!,
+  signInWithSolanaCanister: SIGN_IN_WITH_SOLANA_CANISTER!,
+  authProvider: AuthProvider.II,
+  internetIdentityUrl: '',
+  nfidUrl: '',
+  userGeekApiKey: '',
+  blobUrlPattern: '',
+  achievementUrlPath: '',
+  logger: console,
+})
