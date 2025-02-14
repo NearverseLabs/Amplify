@@ -203,29 +203,42 @@ impl StableState {
         CommonResult::Ok(true)
     }
     pub fn update_user(&mut self, args: Users) -> CommonResult {
-        // match self.check_if_service_account() {
-        //     CommonResult::Err(e) => return CommonResult::Err(e),
-        //     _ => {},
-        // }
-        if self.users.contains_key(&args.id.clone()) {
-            if let Some(user) = self.users.get_mut(&args.id.clone()) {
-                if(args.openchat_principal.is_some()) {
-                    let username = args.openchat_principal.clone().unwrap();
-                    if self.usernames.contains_key(&username.clone()) {
-                        return CommonResult::Err("OC Username already registered.".to_string());
-                    }
-                    user.openchat_principal = args.openchat_principal.clone();
-                    self.usernames.insert(username.clone(), args.id);
+        if let Some(user) = self.users.get_mut(&args.id) {
+            if args.openchat_principal.is_some() {
+                let username = args.openchat_principal.clone().unwrap();
+                if self.usernames.contains_key(&username) {
+                    return CommonResult::Err("OC Username already registered.".to_string());
                 }
-                if(args.taggr_principal.is_some()) {
-                    let username = args.taggr_principal.clone().unwrap();
-                    if self.taggr_usernames.contains_key(&username.clone()) {
-                        return CommonResult::Err("Taggr Username already registered.".to_string());
-                    }
-                    user.taggr_principal = args.taggr_principal.clone();
-                    self.taggr_usernames.insert(username.clone(), args.id);
+                if let Some(old_username) = &user.openchat_principal {
+                    self.usernames.remove(old_username);
                 }
+                user.openchat_principal = Some(username.clone());
+                self.usernames.insert(username, args.id);
+            } else if user.openchat_principal.is_some() && args.openchat_principal.is_none() {
+                if let Some(old_username) = &user.openchat_principal {
+                    self.usernames.remove(old_username);
+                }
+                user.openchat_principal = None;
             }
+
+            if args.taggr_principal.is_some() {
+                let username = args.taggr_principal.clone().unwrap();
+                if self.taggr_usernames.contains_key(&username) {
+                    return CommonResult::Err("Taggr Username already registered.".to_string());
+                }
+                if let Some(old_username) = &user.taggr_principal {
+                    self.taggr_usernames.remove(old_username);
+                }
+                user.taggr_principal = Some(username.clone());
+                self.taggr_usernames.insert(username, args.id);
+            } else if user.taggr_principal.is_some() && args.taggr_principal.is_none() {
+                if let Some(old_username) = &user.taggr_principal {
+                    self.taggr_usernames.remove(old_username);
+                }
+                user.taggr_principal = None;
+            }
+        } else {
+            return CommonResult::Err("User not found.".to_string());
         }
         CommonResult::Ok(true)
     }
