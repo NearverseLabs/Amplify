@@ -1,6 +1,9 @@
 import Button from "@/components/buttons/Button";
 import { Check, Loader2, X } from "lucide-react";
-import { Campaign } from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
+import {
+  Campaign,
+  Users,
+} from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
 import React, { useEffect, useState } from "react";
 import { useBackend } from "@/hooks/useCanisters.ts";
 import { PaginatedCampaign } from "@/hooks/useCampaignsReducer.ts";
@@ -31,12 +34,18 @@ interface IProps {
   setOpenCampaign: (value: boolean) => void;
   campaign: PaginatedCampaign;
   onEnter: () => void;
+  live_user?: Users;
 }
 
 const twitterRegexPattern =
   /^(https:\/\/(?:www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+)(\?s=\d+)?$/;
 
-const CampaignDetails = ({ setOpenCampaign, campaign, onEnter }: IProps) => {
+const CampaignDetails = ({
+  setOpenCampaign,
+  campaign,
+  onEnter,
+  live_user,
+}: IProps) => {
   const [isloading, setIsloading] = React.useState<boolean>(false);
   const [isParticipated, setIsParticipated] = React.useState<boolean>(false);
   const [reply, setReply] = React.useState<string>("");
@@ -60,6 +69,18 @@ const CampaignDetails = ({ setOpenCampaign, campaign, onEnter }: IProps) => {
     if (isloading) return;
     setIsloading(true);
     try {
+      if (
+        campaign.platform === "Openchat" &&
+        (live_user?.openchat_principal?.length || 0) == 0
+      ) {
+        throw Error("OpenChat Account is not linked yet");
+      }
+      if (
+        campaign.platform === "Taggr" &&
+        (live_user?.taggr_principal?.length || 0) == 0
+      ) {
+        throw Error("Taggr Account is not linked yet");
+      }
       await backend.participate_in_campaign(BigInt(campaign.campaign_id));
       await axios.post(`${import.meta.env.VITE_BACKEND_URL}/participate`, {
         campaign_id: Number(campaign.id),
@@ -127,38 +148,77 @@ const CampaignDetails = ({ setOpenCampaign, campaign, onEnter }: IProps) => {
           <p className="text-xs">
             Amplify will verify the following activities (in green)
           </p>
-          <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"1) Join Group"}</p>
-            <CheckUncheckIcon type={campaign.requirements.join_group} />
-          </div>
-          <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"2) Join Community"}</p>
-            <CheckUncheckIcon type={campaign.requirements.join_community} />
-          </div>
-          <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"3) Be Active in Community"}</p>
-            <CheckUncheckIcon
-              type={campaign.requirements.active_in_community_time}
-            />
-          </div>
-          <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"4) Be Active in Group"}</p>
-            <CheckUncheckIcon
-              type={campaign.requirements.active_in_group_time}
-            />
-          </div>
-          <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"5) Message in Community"}</p>
-            <CheckUncheckIcon
-              type={campaign.requirements.messages_in_community}
-            />
-          </div>
-          <div className="my-3 flex items-center justify-between text-sm">
-            <p className="underline">{"6) Message in Group"}</p>
-            <CheckUncheckIcon type={campaign.requirements.messages_in_group} />
-          </div>
+          {campaign.platform === "Taggr" ? (
+            <>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"1) Like"}</p>
+                <CheckUncheckIcon type={campaign.requirements.like} />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"2) Follow"}</p>
+                <CheckUncheckIcon type={campaign.requirements.follow} />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"3) Repost"}</p>
+                <CheckUncheckIcon type={campaign.requirements.repost} />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"4) Comment"}</p>
+                <CheckUncheckIcon type={campaign.requirements.comment} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"1) Join Group"}</p>
+                <CheckUncheckIcon type={campaign.requirements.join_group} />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"2) Join Community"}</p>
+                <CheckUncheckIcon type={campaign.requirements.join_community} />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"3) Be Active in Community"}</p>
+                <CheckUncheckIcon
+                  type={campaign.requirements.active_in_community_time}
+                />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"4) Be Active in Group"}</p>
+                <CheckUncheckIcon
+                  type={campaign.requirements.active_in_group_time}
+                />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"5) Message in Community"}</p>
+                <CheckUncheckIcon
+                  type={campaign.requirements.messages_in_community}
+                />
+              </div>
+              <div className="my-3 flex items-center justify-between text-sm">
+                <p className="underline">{"6) Message in Group"}</p>
+                <CheckUncheckIcon
+                  type={campaign.requirements.messages_in_group}
+                />
+              </div>
+            </>
+          )}
           <div className="mt-5 flex items-center justify-between gap-4">
-            {campaign.join_group && (
+            {campaign.join_group && campaign.platform === "Taggr" && (
+              <Button
+                onClick={() => {
+                  window.open(
+                    `https://6qfxa-ryaaa-aaaai-qbhsq-cai.ic0.app/#/post/${campaign.join_group}`,
+                    "_blank",
+                  );
+                }}
+                variant="dark"
+                // disabled={!isParticipated}
+              >
+                View Post
+              </Button>
+            )}
+            {campaign.join_group && campaign.platform === "Openchat" && (
               <Button
                 onClick={() => {
                   window.open(

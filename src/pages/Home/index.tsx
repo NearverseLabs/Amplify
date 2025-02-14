@@ -6,7 +6,10 @@ import CampaignDetails from "@/components/CampaignDetails";
 import WinnerList from "@/components/WinnerList";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "@/components/AuthLayout";
-import { Settings } from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
+import {
+  Settings,
+  Users,
+} from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
 import Pagination from "@/components/Pagination";
 import { toast } from "react-toastify";
 import { Principal } from "@dfinity/principal";
@@ -86,7 +89,7 @@ const Home = () => {
     if (selectedOption === "In-Progress") obj.ongoing = true;
     if (selectedOption === "Claimed") obj.claimed = true;
     if (selectedOption === "Unclaimed") obj.unclaimed = true;
-    // obj.ready = selectedOption !== "Pending";
+    obj.ready = selectedOption !== "Pending";
     if (selectedOption === "Pending") obj.my = true;
     obj.page = pageNumber;
     return new URLSearchParams(obj).toString();
@@ -546,6 +549,30 @@ const Home = () => {
   // }, [NearestTime]);
 
   console.log("Campaigns", selectedOption, campaigns);
+  const [live_user, setLiveUser] = React.useState<Users | undefined>(undefined);
+
+  const fetchUser = async () => {
+    if (!principal) return;
+    try {
+      const liveUser = await backend.get_user(principal);
+      if ("Ok" in liveUser) {
+        setLiveUser(liveUser.Ok);
+      }
+    } catch (e) {
+      // alert(`Error from ${activeProvider.meta.name}: ${e}`);
+      // return;
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, [principal]);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  console.log("live_user", live_user);
 
   return (
     <AuthLayout>
@@ -562,6 +589,7 @@ const Home = () => {
               setSelectedCampaign(undefined);
               toast.success("Participation submitted!");
             }}
+            live_user={live_user}
             campaign={selectedCampaign}
             setOpenCampaign={setOpenCampaign}
           />

@@ -129,8 +129,10 @@ export const OpenChattModal = ({
   isOpen,
   setIsOpen,
   onClose,
+  platform = "Openchat",
   token,
 }: {
+  platform: "Taggr" | "Openchat";
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onClose: () => void;
@@ -150,13 +152,30 @@ export const OpenChattModal = ({
     if (!principal) return;
     setLoading(true);
     try {
-      const liveUser = await backend.update_user({
-        openchat_principal: [userId],
-        id: principal,
-        name: principal?.toString(),
-        taggr_principal: [],
-      });
-      console.log("liveUser", liveUser);
+      if (platform === "Openchat") {
+        const liveUser = await backend.update_user({
+          openchat_principal: [userId],
+          id: principal,
+          name: principal?.toString(),
+          taggr_principal: [],
+        });
+        console.log("liveUser", liveUser);
+        if ("Err" in liveUser) {
+          alert(liveUser.Err);
+        }
+      }
+      if (platform === "Taggr") {
+        const liveUser = await backend.update_user({
+          openchat_principal: [],
+          id: principal,
+          name: principal?.toString(),
+          taggr_principal: [userId],
+        });
+        console.log("liveUser", liveUser);
+        if ("Err" in liveUser) {
+          alert(liveUser.Err);
+        }
+      }
     } catch (e: any) {
       alert(`Something went wrong: ${e?.message}`);
       // return;
@@ -177,16 +196,16 @@ export const OpenChattModal = ({
       {/* Modal */}
       <div className="fixed left-1/2 top-1/2 z-50 mx-4 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 transform rounded bg-white p-8 pb-6 shadow-xl">
         <p className=" text-center text-lg font-semibold xl:text-xl">
-          Link OpenChat
+          Link {platform}
         </p>
         <p className="mb-6 mt-1 text-center text-xs text-gray-500">
-          {"Link your OpenChat Account."}
+          {`Link your ${platform} Account.`}
         </p>
         <div className="mx-auto my-5 w-full  border-t-[0.5px]"></div>
         <Input
           containerClass="w-full"
           className="text-ellipsis text-sm"
-          placeholder={"Your OpenChat account UserID"}
+          placeholder={`Your ${platform} account UserID`}
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
         />

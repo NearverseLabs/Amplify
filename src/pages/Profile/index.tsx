@@ -1,23 +1,12 @@
 import { Copy, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useConnect, ConnectButton, ConnectDialog } from "@connect2ic/react";
 import { walletNameTrimmer } from "@/lib/utils";
 import { useUserContext } from "@/providers/UserProvider";
 import AuthLayout from "@/components/AuthLayout";
-import { idlFactory } from "../../declarations/icrc1_ledger_canister";
-import { idlFactory as icpIdlFactory } from "../../declarations/icp_ledger_canister";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Users,
-  WhiteListedToken,
-} from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
+import { Users } from "@/declarations/amplify_sc_rust_backend/amplify_sc_rust_backend.did";
 import { useBackend, useIcpConnection } from "@/hooks/useCanisters.ts";
-import { _SERVICE } from "@/declarations/icrc1_ledger_canister/icrc1_ledger_canister.did";
-import { _SERVICE as ICP_SERVICE } from "@/declarations/icp_ledger_canister/icp_ledger_canister.did";
-import {
-  fetchToken,
-  useWhiteListedContext,
-} from "@/providers/WhiteListedTokensProvider.tsx";
+import { useWhiteListedContext } from "@/providers/WhiteListedTokensProvider.tsx";
 import Button from "@/components/buttons/Button";
 import DepositModal, { OpenChattModal } from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
@@ -100,6 +89,7 @@ export default function Profile() {
 
   const [isLoading, setLoading] = React.useState(false);
   const [isOpenChatModalOpen, setIsOpenChatModalOpen] = useState(false);
+  const [isTaggrModalOpen, setIsTaggrModalOpen] = useState(false);
   const [live_user, setLiveUser] = React.useState<Users | undefined>(undefined);
   const [backend] = useBackend();
 
@@ -121,6 +111,7 @@ export default function Profile() {
 
   const { user, randomAvatar } = useUserContext();
 
+  console.log("live_user", live_user);
   // if (isLoading) {
   //   return (
   //     <div className="flex h-[calc(100vh_-_73px)] w-full items-center justify-center">
@@ -170,7 +161,7 @@ export default function Profile() {
             <div className="flex items-center justify-between py-3">
               <p
                 onClick={() => {
-                  if ((live_user?.openchat_principal.length || 0) > 0) {
+                  if ((live_user?.taggr_principal.length || 0) > 0) {
                     window?.navigator?.clipboard?.writeText(
                       live_user?.taggr_principal?.[0]?.toString() || "",
                     );
@@ -181,11 +172,7 @@ export default function Profile() {
               >
                 {(live_user?.taggr_principal.length || 0) > 0 ? (
                   <span className="flex items-center">
-                    {walletNameTrimmer(
-                      live_user?.taggr_principal?.[0]?.toString(),
-                      10,
-                      8,
-                    )}{" "}
+                    {live_user?.taggr_principal?.[0]?.toString()}{" "}
                     <Copy className="ml-1" />
                   </span>
                 ) : (
@@ -194,10 +181,12 @@ export default function Profile() {
               </p>
               <button
                 className="cursor-pointer text-lg font-normal underline min-[2560px]:text-4xl"
-                disabled={true}
-                onClick={() => setIsOpenChatModalOpen(true)}
+                // disabled={(live_user?.taggr_principal?.length || 0) > 0}
+                onClick={() => setIsTaggrModalOpen(true)}
               >
-                Link
+                {(live_user?.taggr_principal?.length || 0) > 0
+                  ? "Linked"
+                  : "Link"}
               </button>
             </div>
           </div>
@@ -233,7 +222,7 @@ export default function Profile() {
               <button
                 className="cursor-pointer text-lg font-normal underline min-[2560px]:text-4xl"
                 onClick={() => setIsOpenChatModalOpen(true)}
-                disabled={(live_user?.openchat_principal?.length || 0) > 0}
+                // disabled={(live_user?.openchat_principal?.length || 0) > 0}
               >
                 {(live_user?.openchat_principal?.length || 0) > 0
                   ? "Linked"
@@ -342,11 +331,22 @@ export default function Profile() {
               </div>
             )}
             <OpenChattModal
+              platform={"Openchat"}
               isOpen={isOpenChatModalOpen}
               setIsOpen={setIsOpenChatModalOpen}
               onClose={() => {
                 fetchUser();
                 setIsOpenChatModalOpen(false);
+              }}
+              token={""}
+            />
+            <OpenChattModal
+              platform={"Taggr"}
+              isOpen={isTaggrModalOpen}
+              setIsOpen={setIsTaggrModalOpen}
+              onClose={() => {
+                fetchUser();
+                setIsTaggrModalOpen(false);
               }}
               token={""}
             />

@@ -9,6 +9,7 @@ import {
 } from "@/hooks/useCanisters.ts";
 import { toast } from "react-toastify";
 import { toSmallestUnit } from "@/lib/utils";
+import { useWhiteListedContext } from "@/providers/WhiteListedTokensProvider.tsx";
 
 const WithdrawModal = ({
   isOpen,
@@ -32,7 +33,7 @@ const WithdrawModal = ({
 
   const [withdrawIcp] = useWithdrawICP();
   const [withdrawIcrc1Token] = useWithdrawIcrc1Tokens(token?.token?.toString());
-
+  const { refetchToken } = useWhiteListedContext();
   const validateAmount = (value: string) => {
     if (!value) return "Amount is required.";
     if (Number(value) > availableFund)
@@ -86,6 +87,7 @@ const WithdrawModal = ({
         });
       }
       console.log(response);
+      refetchToken && refetchToken(token);
       onClose();
     } catch (error) {
       toast.error("Token transferred Failed !");

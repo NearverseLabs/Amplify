@@ -103,7 +103,8 @@ const platformPatterns = {
   twitter:
     /^(https:\/\/(?:www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+)(\?s=\d+)?$/,
   openchat: /^https:\/\/oc\.app\/community\/[a-zA-Z0-9-]+$/,
-  taggr: /^https:\/\/taggr\.network\/[a-zA-Z0-9-]+$/,
+  taggr:
+    /^https?:\/\/(?:taggr\.(?:link|network|blog|wtf)|6qfxa-ryaaa-aaaai-qbhsq-cai\.icp0\.io|6qfxa-ryaaa-aaaai-qbhsq-cai\.ic0\.app)(?:\/|$)/i,
 };
 
 function convertToSeconds(timeStr: string) {
@@ -128,6 +129,14 @@ function convertToSeconds(timeStr: string) {
 
 function extractGroupId(url: string) {
   const match = url.match(/group\/([a-z0-9-]+)/);
+  return match ? match[1] : null;
+}
+function extractPostId(input: string) {
+  if (/^\d+$/.test(input)) {
+    return input;
+  }
+
+  const match = input.match(/\/#\/post\/(\d+)/);
   return match ? match[1] : null;
 }
 function extractCommunityAndChannelIds(url: string): string[] | null {
@@ -351,7 +360,10 @@ const CreateCampaign = () => {
               join_community: extractCommunityAndChannelIds(
                 values.join_community,
               )?.join(":"),
-              join_group: extractGroupId(values.join_group),
+              join_group:
+                selectedPlatform === "Openchat"
+                  ? extractGroupId(values.join_group)
+                  : extractPostId(values.join_group),
               messages_in_community: Number(values.messages_in_community || 0),
               messages_in_group: Number(values.messages_in_group || 0),
               reward: BigInt(
@@ -510,27 +522,6 @@ const CreateCampaign = () => {
     index: number,
   ) => {
     switch (requirement.type) {
-      case "join_group":
-        return (
-          <div
-            key={index}
-            className="mb-6 items-center gap-4 md:flex min-[2560px]:mb-10"
-          >
-            <div className="w-full md:w-1/5">
-              <h3 className="mb-2 text-base font-semibold min-[2560px]:text-4xl">
-                Group Invite Link*
-              </h3>
-            </div>
-            <Input
-              placeholder="Enter group invite link"
-              value={values.join_group}
-              name={"join_group"}
-              onChange={handleChange}
-              containerClass="w-full md:w-2/5"
-            />
-          </div>
-        );
-
       case "join_community":
         return (
           <div
@@ -664,10 +655,10 @@ const CreateCampaign = () => {
           <div className="mb-6 items-center gap-4 md:flex min-[2560px]:mb-10">
             <div className="w-full md:w-1/5">
               <h3 className="mb-2 text-base font-semibold min-[2560px]:text-4xl">
-                Project/Username*
+                Project Name*
               </h3>
               <p className="text-sm font-normal text-[#595959] min-[2560px]:text-2xl">
-                {`Your ${selectedPlatform} Username`}
+                {`Your Project Name`}
               </p>
             </div>
             <Input
@@ -751,12 +742,12 @@ const CreateCampaign = () => {
                     </span>
                   </div>
                 </div>
-                {requirements.includes(currentRequirementList[0]) && (
-                  <div className=" mt-1 text-xs">
-                    Note : Follows can not be validated with Twitter API V2
-                    Basic. We are looking for a workaround.
-                  </div>
-                )}
+                {/*{requirements.includes(currentRequirementList[0]) && (*/}
+                {/*  <div className=" mt-1 text-xs">*/}
+                {/*    Note : Follows can not be validated with Twitter API V2*/}
+                {/*    Basic. We are looking for a workaround.*/}
+                {/*  </div>*/}
+                {/*)}*/}
                 <div
                   className={`${
                     show ? "block" : "hidden"
@@ -783,6 +774,30 @@ const CreateCampaign = () => {
               </div>
             </div>
           </div>
+          {((selectedPlatform === "Openchat" &&
+            requirementObject?.join_group) ||
+            selectedPlatform === "Taggr") && (
+            <div className="mb-6 items-center gap-4 md:flex min-[2560px]:mb-10">
+              <div className="w-full md:w-1/5">
+                <h3 className="mb-2 text-base font-semibold min-[2560px]:text-4xl">
+                  {selectedPlatform === "Openchat"
+                    ? "Group Invite Link*"
+                    : "Taggr Post Link*"}
+                </h3>
+              </div>
+              <Input
+                placeholder={
+                  selectedPlatform === "Openchat"
+                    ? "Enter group invite link"
+                    : "Enter post link or id"
+                }
+                value={values.join_group}
+                name={"join_group"}
+                onChange={handleChange}
+                containerClass="w-full md:w-2/5"
+              />
+            </div>
+          )}
           {selectedPlatform === "Openchat" && requirements.length > 0 && (
             <div className="mt-4 space-y-4">
               {requirements.map((requirement, index) =>
@@ -954,19 +969,26 @@ const CreateCampaign = () => {
             </div>
           )}
           <div className="mb-3 mt-6 font-semibold">{values.project_name}</div>
-          {/* TODO: modify it for tagger and openchat */}
-          {/*{values.tweet_link &&*/}
-          {/*  platformPatterns["twitter"].test(values.tweet_link) && (*/}
-          {/*    <div className="w-full md:w-[550px]">*/}
-          {/*      <iframe*/}
-          {/*        height="400"*/}
-          {/*        width="100%"*/}
-          {/*        src={`https://twitframe.com/show?url=${convertXToTwitter(*/}
-          {/*          values.tweet_link,*/}
-          {/*        )}`}*/}
-          {/*      ></iframe>*/}
-          {/*    </div>*/}
-          {/*  )}*/}
+          {values.join_group &&
+            platformPatterns[
+              selectedPlatform.toLowerCase() as "openchat" | "taggr"
+            ].test(values.join_group) && (
+              <div className="w-full md:w-[550px]">
+                <iframe
+                  height="400"
+                  width="100%"
+                  src={
+                    selectedPlatform.toLowerCase() === "taggr"
+                      ? `https://6qfxa-ryaaa-aaaai-qbhsq-cai.ic0.app/#/post/${extractPostId(
+                          values.join_group,
+                        )}`
+                      : `https://oc.app/group/${extractGroupId(
+                          values.join_group,
+                        )}`
+                  }
+                ></iframe>
+              </div>
+            )}
           <div>
             <Button
               type="submit"

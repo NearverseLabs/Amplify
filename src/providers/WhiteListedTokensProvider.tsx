@@ -130,6 +130,8 @@ export const fetchToken = async (
 const WhiteListedTokensContext = createContext<{
   rewardTokens: Record<string, RewardToken> | undefined;
   isLoading: boolean;
+  fetchTokens?: () => void;
+  refetchToken?: (token: WhiteListedToken) => void;
 }>({ rewardTokens: undefined, isLoading: true });
 
 export const useWhiteListedContext = () => {
@@ -172,6 +174,25 @@ export const WhiteListedTokensProvider: React.FC<{ children: any }> = ({
     setIsLoading(false);
   }, [principal, addRewardToken]);
 
+  const refetchToken = useCallback(
+    async (token: WhiteListedToken) => {
+      try {
+        setIsLoading(true);
+        const finalToken = await fetchToken(token, principal);
+        if (finalToken) {
+          addRewardToken(token.token.toString(), {
+            ...token,
+            ...finalToken,
+          });
+        }
+      } catch (e) {
+        /* empty */
+      }
+      setIsLoading(false);
+    },
+    [principal, addRewardToken],
+  );
+
   useEffect(() => {
     fetchTokens();
   }, [principal]);
@@ -180,7 +201,9 @@ export const WhiteListedTokensProvider: React.FC<{ children: any }> = ({
 
   return (
     <>
-      <WhiteListedTokensContext.Provider value={{ rewardTokens, isLoading }}>
+      <WhiteListedTokensContext.Provider
+        value={{ rewardTokens, isLoading, fetchTokens, refetchToken }}
+      >
         {children}
       </WhiteListedTokensContext.Provider>
     </>

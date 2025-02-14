@@ -16,6 +16,7 @@ export interface PaginatedCampaign {
   join_group: string;
   join_community: string;
   tweet_id: string;
+  platform: "Openchat" | "Taggr";
   campaign_id: number;
   winners: number;
   reward_token: string;
