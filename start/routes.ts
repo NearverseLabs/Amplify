@@ -27,7 +27,6 @@ import Env from '@ioc:Adonis/Core/Env'
 import { alice, backend } from 'App/Handlers/Actor'
 import { Principal } from '@dfinity/principal'
 import Logger from '@ioc:Adonis/Core/Logger'
-import { openchatAgent } from 'App/Handlers/GetOpenChatSDK'
 
 Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
@@ -49,26 +48,6 @@ Route.get('/twitter/redirect/:principal', async ({ ally, request, session }) => 
   return ally.use('twitter_v2').redirect()
 })
 
-Route.get('/test', async ({}) => {
-  const summary = await openchatAgent.getCommunitySummary('67qeu-oaaaa-aaaaf-bmura-cai')
-  if (summary.kind !== 'community') throw new Error('Unable to open chat')
-  return summary
-  // const x = summary.group.latestMessageIndex || 0
-  // const y = (summary.group.latestMessageIndex || 0) + 100
-  const resp = await openchatAgent.getGroupDetails(
-    {
-      kind: 'channel',
-      communityId: '67qeu-oaaaa-aaaaf-bmura-cai',
-      channelId: '131808037317481632487667980530052334896',
-    },
-    // [0, summary.latestEventIndex || 0],
-    // 0,
-    // true,
-    0n
-    // undefined
-  )
-  return resp
-})
 
 Route.get('/twitter/callback', async ({ ally, response, session, auth }) => {
   const twitter = ally.use('twitter_v2')
