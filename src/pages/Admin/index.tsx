@@ -259,6 +259,7 @@ const Admin = () => {
   const Tokens = [
     { title: "ICRC2", symbol: "icrc2" },
     { title: "ICRC1", symbol: "icrc1" },
+    { title: "ICRC3", symbol: "icrc3" },
     { title: "ICP", symbol: "icp" },
   ];
   const [selectedToken, setSelectedToken] = useState(Tokens[0]);
