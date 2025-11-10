@@ -114,3 +114,4 @@ Users/participants can earn rewards for engaging in and winning campaigns.
 ## Useful links
 
 https://amplify-docs.nearverselabs.com/support-and-useful-links
+https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=ggvur-6yaaa-aaaag-attxq-cai
